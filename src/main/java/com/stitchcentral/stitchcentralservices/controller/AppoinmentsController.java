@@ -20,7 +20,7 @@ public class AppoinmentsController {
     @RequestMapping(value = "/saveAppoinment", method = RequestMethod.POST, produces = "application/json")
     public ResponseEntity<?> saveAppoinment(@RequestBody AppointmentsDTO appointmentsDTO) {
 
-        LOGGER.info("saveAppoinment method is called");
+        LOGGER.info("saveAppoinment method is called ");
         return new ResponseEntity<String>(appointmentsService.saveAppointment(appointmentsDTO), HttpStatus.OK);
 
     }
