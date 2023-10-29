@@ -12,9 +12,12 @@ import com.stitchcentral.stitchcentralservices.util.CommonResponse;
 import com.stitchcentral.stitchcentralservices.util.enums.AppoinmentStatus;
 import jakarta.transaction.Transactional;
 import org.modelmapper.ModelMapper;
+import org.modelmapper.TypeToken;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 @Service("appointmentsService")
@@ -91,5 +94,49 @@ public class AppoinmentsServiceImp implements AppointmentsService {
             e.printStackTrace();
             return new CommonResponse(false, e.getMessage()).toString();
         }
+    }
+
+    @Override
+    public List<AppointmentsDTO> getAppoinment(String email) {
+        System.out.println("getAppoinment method is called-- "+email);
+        try{
+            Optional<Customer> customerFind = customerRepo.findByEmail(email);
+            if(customerFind.isPresent()) {
+                Optional<Appointments> appointmentsList = appoinmentsRepo.findByCustomer_Id(customerFind.get().getId());
+                if(appointmentsList.isPresent()){
+                    List<AppointmentsDTO> appointmentsDTOList = new ArrayList<>();
+                    List<Appointments> appointmentsList1 = appoinmentsRepo.findById(appointmentsList.get().getId());
+//                    appointmentsList1.forEach(appointments -> {
+//                        AppointmentsDTO appointmentsDTO = new AppointmentsDTO();
+//                        appointmentsDTO.setAppointment_date(appointments.getAppointment_date());
+//                        appointmentsDTO.setDescription(appointments.getDescription());
+//                        appointmentsDTO.setStatus(appointments.getStatus());
+//                        appointmentsDTO.setType(appointments.getType());
+//                        appointmentsDTO.setCustomer(appointments.getCustomer());
+//                        appointmentsDTO.setSample(appointments.getClient_sample());
+//                        appointmentsDTOList.add(appointmentsDTO);
+//                    });
+                    appointmentsList1.forEach(appointments -> {
+                        AppointmentsDTO appointmentsDTO = modelMapper.map(appointments, AppointmentsDTO.class);
+                        appointmentsDTOList.add(appointmentsDTO);
+                    });
+                    return appointmentsDTOList;
+
+
+
+
+
+                }else {
+                    return null;
+                }
+
+            }else{
+                return null;
+            }
+        }catch (Exception e){
+            e.printStackTrace();
+            return null;
+        }
+
     }
 }

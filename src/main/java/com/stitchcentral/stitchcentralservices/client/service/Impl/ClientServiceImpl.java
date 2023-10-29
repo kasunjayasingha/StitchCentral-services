@@ -11,8 +11,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.configurationprocessor.json.JSONObject;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service("clientService")
 @Transactional
@@ -51,6 +53,43 @@ public class ClientServiceImpl implements ClientService {
 
 
 
+    }
+
+//    @Override
+//    public List<CustomerDTO> getCustomer(String email) {
+//        System.out.println("getCustomer method is called -- " + email);
+//        try {
+//            List<Customer> customerList = customerRepo.findByEmail(email);
+//            List<CustomerDTO> customerDTOList = customerList
+//                    .stream()
+//                    .map(customer -> modelMapper.map(customer, CustomerDTO.class))
+//                    .collect(Collectors.toList());
+//
+//            return customerDTOList;
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//            return null; // You might want to handle exceptions more gracefully
+//        }
+//    }
+
+    @Override
+    public List<CustomerDTO> getCustomer(String email) {
+        System.out.println("getCustomer method is called -- " + email);
+        try {
+            Optional<Customer> customerOptional = customerRepo.findByEmail(email);
+
+            if (customerOptional.isPresent()) {
+                Customer customer = customerOptional.get();
+                List<CustomerDTO> customerDTOList = new ArrayList<>();
+                customerDTOList.add(modelMapper.map(customer, CustomerDTO.class));
+                return customerDTOList;
+            } else {
+                return new ArrayList<>(); // Return an empty list if no customer is found
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null; // You might want to handle exceptions more gracefully
+        }
     }
 
 

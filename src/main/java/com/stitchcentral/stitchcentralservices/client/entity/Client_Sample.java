@@ -23,7 +23,7 @@ public class Client_Sample {
     private String relative_path;
 
 //    private int customer_id;
-    @OneToOne(fetch = FetchType.LAZY)
+    @OneToOne
     @JoinColumn(name = "appointment_id")
     private Appointments appointments;
 

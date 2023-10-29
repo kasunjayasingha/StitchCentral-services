@@ -8,6 +8,7 @@ import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.logging.Logger;
 
 @RestController
@@ -24,4 +25,11 @@ public class AppoinmentsController {
         return new ResponseEntity<String>(appointmentsService.saveAppointment(appointmentsDTO), HttpStatus.OK);
 
     }
+
+    @RequestMapping(value = "/getAppoinment/{email}", method = RequestMethod.GET, produces = "application/json")
+    public List<AppointmentsDTO> getAppoinment(@PathVariable String email) {
+        LOGGER.info("getAppoinment method is called");
+        return appointmentsService.getAppoinment(email);
+    }
+
 }

@@ -9,6 +9,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.logging.Logger;
 
 @RestController
@@ -24,5 +25,11 @@ private  ClientService clientService;
     public ResponseEntity<?> saveCustomer(@RequestBody CustomerDTO customerDTO) {
         LOGGER.info("saveCustomer method is called");
         return new ResponseEntity<String>(clientService.saveCustomer(customerDTO), HttpStatus.OK);
+    }
+
+    @RequestMapping(value = "/getCustomer/{email}",method = RequestMethod.GET,produces = "application/json")
+    public List<CustomerDTO> getCustomer(@PathVariable String email) {
+        LOGGER.info("getCustomer method is called");
+        return clientService.getCustomer(email);
     }
 }

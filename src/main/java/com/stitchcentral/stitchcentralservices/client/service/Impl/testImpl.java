@@ -5,6 +5,8 @@ import com.stitchcentral.stitchcentralservices.client.service.AppointmentsServic
 import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service("appointmentsService1")
 @Transactional
 public class testImpl implements AppointmentsService {
@@ -13,4 +15,11 @@ public class testImpl implements AppointmentsService {
     public String saveAppointment(AppointmentsDTO appointmentsDTO) {
         return null;
     }
+
+    @Override
+    public List<AppointmentsDTO> getAppoinment(String email) {
+        return null;
+    }
+
+
 }
