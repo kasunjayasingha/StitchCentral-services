@@ -23,7 +23,8 @@ public class Client_Sample {
     private String relative_path;
 
 //    private int customer_id;
-    @OneToOne(mappedBy = "client_sample")
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "appointment_id")
     private Appointments appointments;
 
     @Temporal(TemporalType.DATE)

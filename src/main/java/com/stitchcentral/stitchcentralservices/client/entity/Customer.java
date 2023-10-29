@@ -34,9 +34,9 @@ public class Customer {
 
 
     @Temporal(TemporalType.DATE)
-    private Date create_time;
+    private Date create_date;
 
     @Temporal(TemporalType.DATE)
-    private Date update_time;
+    private Date update_date;
 
 }

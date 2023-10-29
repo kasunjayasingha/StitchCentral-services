@@ -23,6 +23,6 @@ public class CustomerDTO {
     private String email;
     private String phone_no;
     private String password;
-    private Date create_time;
-    private Date update_time;
+    private Date create_date;
+    private Date update_date;
 }

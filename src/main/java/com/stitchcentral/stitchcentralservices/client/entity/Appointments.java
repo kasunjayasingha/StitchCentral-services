@@ -30,7 +30,6 @@ public class Appointments {
     @JoinColumn(name = "customer_Id")
     private Customer customer;
 
-    @OneToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "sample_id")
+    @OneToOne(mappedBy = "appointments")
     private Client_Sample client_sample;
 }
