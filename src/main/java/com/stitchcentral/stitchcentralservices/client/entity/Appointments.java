@@ -31,6 +31,5 @@ public class Appointments {
     private Customer customer;
 
     @OneToOne(mappedBy = "appointments")
-    @JoinColumn(name = "client_sample_id", referencedColumnName = "id")
     private Client_Sample client_sample;
 }

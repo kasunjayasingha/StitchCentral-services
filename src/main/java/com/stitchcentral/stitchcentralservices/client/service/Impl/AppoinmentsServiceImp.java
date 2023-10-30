@@ -1,6 +1,7 @@
 package com.stitchcentral.stitchcentralservices.client.service.Impl;
 
 import com.stitchcentral.stitchcentralservices.client.dto.AppointmentsDTO;
+import com.stitchcentral.stitchcentralservices.client.dto.ClientSampleDTO;
 import com.stitchcentral.stitchcentralservices.client.entity.Appointments;
 import com.stitchcentral.stitchcentralservices.client.entity.Client_Sample;
 import com.stitchcentral.stitchcentralservices.client.entity.Customer;
@@ -76,9 +77,9 @@ public class AppoinmentsServiceImp implements AppointmentsService {
                     clientSample.setCreate_date(appointmentsDTO.getSample().getCreate_date());
                     clientSample.setUpdate_date(appointmentsDTO.getSample().getUpdate_date());
                     clientSample.setAppointments(appointments);
+
 //                    clientSampleRepo.save(clientSample);
                     clientSampleRepo.save(modelMapper.map(clientSample, Client_Sample.class));
-
 //                    appointments.setClient_sample(appointmentsDTO.getSample());
 //                    appoinmentsRepo.save(modelMapper.map(appointmentsDTO, Appointments.class));
 
@@ -106,30 +107,17 @@ public class AppoinmentsServiceImp implements AppointmentsService {
                 if(appointmentsList.isPresent()){
                     List<AppointmentsDTO> appointmentsDTOList = new ArrayList<>();
                     List<Appointments> appointmentsList1 = appoinmentsRepo.findById(appointmentsList.get().getId());
-//                    appointmentsList1.forEach(appointments -> {
-//                        AppointmentsDTO appointmentsDTO = new AppointmentsDTO();
-//                        appointmentsDTO.setAppointment_date(appointments.getAppointment_date());
-//                        appointmentsDTO.setDescription(appointments.getDescription());
-//                        appointmentsDTO.setStatus(appointments.getStatus());
-//                        appointmentsDTO.setType(appointments.getType());
-//                        appointmentsDTO.setCustomer(appointments.getCustomer());
-//                        appointmentsDTO.setSample(appointments.getClient_sample());
-//                        appointmentsDTOList.add(appointmentsDTO);
-//                    });
+                    List<Client_Sample> clientSampleList = clientSampleRepo.findByAppointments_Id(appointmentsList.get().getId());
+//
                     appointmentsList1.forEach(appointments -> {
                         AppointmentsDTO appointmentsDTO = modelMapper.map(appointments, AppointmentsDTO.class);
+                        appointmentsDTO.setSample(modelMapper.map(clientSampleList.get(0), ClientSampleDTO.class));
                         appointmentsDTOList.add(appointmentsDTO);
                     });
                     return appointmentsDTOList;
-
-
-
-
-
                 }else {
                     return null;
                 }
-
             }else{
                 return null;
             }
@@ -137,6 +125,49 @@ public class AppoinmentsServiceImp implements AppointmentsService {
             e.printStackTrace();
             return null;
         }
+    }
 
+    @Override
+    public String updateAppoinment(AppointmentsDTO appointmentsDTO) {
+        System.out.println("updateAppoinment method is called-- "+appointmentsDTO.toString());
+        try{
+            Optional<Customer> customerFind = customerRepo.existsByEmail(appointmentsDTO.getCustomer().getEmail());
+            System.out.println("customerFind--------- "+customerFind);
+            if(customerFind.isPresent()) {
+                Optional<Customer> customerFind1 = customerRepo.findByEmail(appointmentsDTO.getCustomer().getEmail());
+                Optional<Appointments> appointmentsFind = appoinmentsRepo.findByCustomer_Id(customerFind1.get().getId());
+                if(appointmentsFind.isPresent()){
+                    Appointments appointments = appointmentsFind.get();
+                    appointments.setStatus(AppoinmentStatus.valueOf(appointmentsDTO.getStatus().toString()));
+                    appointments.setAppointment_date(appointmentsDTO.getAppointment_date());
+                    appointments.setDescription(appointmentsDTO.getDescription());
+                    appointments.setType(appointmentsDTO.getType());
+                    appointments= appoinmentsRepo.save(appointments);
+
+                    Optional<Client_Sample> clientSampleFind = clientSampleRepo.findByAppointments_IdOrAppointments_Customer_Email(appointments.getId(), appointmentsDTO.getCustomer().getEmail());
+                    if(clientSampleFind.isPresent()){
+                        Client_Sample clientSample = clientSampleFind.get();
+                        clientSample.setFile_name(appointmentsDTO.getSample().getFile_name());
+                        clientSample.setFile_type(appointmentsDTO.getSample().getFile_type());
+                        clientSample.setPath(appointmentsDTO.getSample().getPath());
+                        clientSample.setRelative_path(appointmentsDTO.getSample().getRelative_path());
+                        clientSample.setCreate_date(appointmentsDTO.getSample().getCreate_date());
+                        clientSample.setUpdate_date(appointmentsDTO.getSample().getUpdate_date());
+                        clientSample.setAppointments(appointments);
+                        clientSampleRepo.save(clientSample);
+                    }
+
+                    return new CommonResponse(true, "Appointment updated successfully").toString();
+                }else {
+                    return new CommonResponse(false, "Appointment not found").toString();
+                }
+
+            }else{
+                return new CommonResponse(false, "Customer not found").toString();
+            }
+        }catch (Exception e){
+            e.printStackTrace();
+            return new CommonResponse(false, e.getMessage()).toString();
+        }
     }
 }

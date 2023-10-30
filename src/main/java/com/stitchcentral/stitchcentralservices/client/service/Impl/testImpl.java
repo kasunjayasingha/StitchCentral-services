@@ -21,5 +21,10 @@ public class testImpl implements AppointmentsService {
         return null;
     }
 
+    @Override
+    public String updateAppoinment(AppointmentsDTO appointmentsDTO) {
+        return null;
+    }
+
 
 }

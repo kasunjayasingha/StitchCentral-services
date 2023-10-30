@@ -11,4 +11,5 @@ public interface AppoinmentsRepo extends JpaRepository<Appointments, Integer> {
 
     Optional<Appointments> findByCustomer_Id(int id);
     List<Appointments> findById(int id);
+    Optional<Appointments> existsByCustomer_Id(int id);
 }

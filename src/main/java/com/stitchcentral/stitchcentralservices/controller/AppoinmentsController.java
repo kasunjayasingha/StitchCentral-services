@@ -32,4 +32,10 @@ public class AppoinmentsController {
         return appointmentsService.getAppoinment(email);
     }
 
+    @RequestMapping(value = "/updateAppoinment", method = RequestMethod.PUT, produces = "application/json")
+    public ResponseEntity<?> updateAppoinment(@RequestBody AppointmentsDTO appointmentsDTO) {
+        LOGGER.info("updateAppoinment method is called");
+        return new ResponseEntity<String>(appointmentsService.updateAppoinment(appointmentsDTO), HttpStatus.OK);
+    }
+
 }
