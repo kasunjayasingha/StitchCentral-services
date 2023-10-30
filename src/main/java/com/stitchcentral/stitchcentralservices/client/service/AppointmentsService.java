@@ -10,5 +10,6 @@ public interface AppointmentsService {
     String saveAppointment(AppointmentsDTO appointmentsDTO);
     List<AppointmentsDTO> getAppoinment(String email);
     String updateAppoinment(AppointmentsDTO appointmentsDTO);
+    String deleteAppoinment(String email);
 
 }

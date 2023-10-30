@@ -38,4 +38,10 @@ public class AppoinmentsController {
         return new ResponseEntity<String>(appointmentsService.updateAppoinment(appointmentsDTO), HttpStatus.OK);
     }
 
+    @RequestMapping(value = "/deleteAppoinment/{email}", method = RequestMethod.DELETE, produces = "application/json")
+    public ResponseEntity<?> deleteAppoinment(@PathVariable String email) {
+        LOGGER.info("deleteAppoinment method is called");
+        return new ResponseEntity<String>(appointmentsService.deleteAppoinment(email), HttpStatus.OK);
+    }
+
 }

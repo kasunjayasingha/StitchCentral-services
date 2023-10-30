@@ -170,4 +170,28 @@ public class AppoinmentsServiceImp implements AppointmentsService {
             return new CommonResponse(false, e.getMessage()).toString();
         }
     }
+
+    @Override
+    public String deleteAppoinment(String email) {
+        System.out.println("deleteAppoinment method is called-- "+email);
+        try{
+            Optional<Customer> customerFind = customerRepo.findByEmail(email);
+            if(customerFind.isPresent()) {
+                Optional<Appointments> appointmentsFind = appoinmentsRepo.findByCustomer_IdAndStatus(customerFind.get().getId(), AppoinmentStatus.PENDING);
+                if(appointmentsFind.isPresent()){
+                    clientSampleRepo.deleteByAppointments_Id(appointmentsFind.get().getId());
+                    appoinmentsRepo.deleteById(appointmentsFind.get().getId());
+                    return new CommonResponse(true, "Appointment deleted successfully").toString();
+                }else {
+                    return new CommonResponse(false, "Appointment not found").toString();
+                }
+
+            }else{
+                return new CommonResponse(false, "Customer not found").toString();
+            }
+        }catch (Exception e){
+            e.printStackTrace();
+            return new CommonResponse(false, e.getMessage()).toString();
+        }
+    }
 }

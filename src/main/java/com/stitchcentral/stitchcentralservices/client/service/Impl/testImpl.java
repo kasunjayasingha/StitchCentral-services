@@ -26,5 +26,10 @@ public class testImpl implements AppointmentsService {
         return null;
     }
 
+    @Override
+    public String deleteAppoinment(String email) {
+        return null;
+    }
+
 
 }

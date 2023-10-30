@@ -12,5 +12,6 @@ public interface Client_SampleRepo extends JpaRepository<Client_Sample, Integer>
     Optional<Client_Sample> findByAppointments_IdOrAppointments_Customer_Email(int id, String email);
 
     Optional<Client_Sample> existsByAppointments_Id(int id);
+    int deleteByAppointments_Id(int id);
 
 }
