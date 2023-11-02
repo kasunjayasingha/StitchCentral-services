@@ -13,6 +13,7 @@ import java.util.logging.Logger;
 
 @RestController
 @RequestMapping("api/v1/appoinments")
+@CrossOrigin("*")
 public class AppoinmentsController {
     private static final Logger LOGGER = Logger.getLogger(clientController.class.getName());
     @Autowired

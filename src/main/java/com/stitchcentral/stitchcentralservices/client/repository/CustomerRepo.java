@@ -1,6 +1,7 @@
 package com.stitchcentral.stitchcentralservices.client.repository;
 
 import com.stitchcentral.stitchcentralservices.client.entity.Customer;
+import com.stitchcentral.stitchcentralservices.util.enums.AppoinmentStatus;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;
@@ -13,5 +14,7 @@ public interface CustomerRepo extends JpaRepository<Customer, Integer> {
     List<Customer> findByEmailAndId(String email,int Id);
 
     Optional<Customer> existsByEmail(String email);
+
+    Optional<Customer> findByEmailAndAppointments_Status(String email, AppoinmentStatus status);
 
 }

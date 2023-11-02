@@ -1,6 +1,7 @@
 package com.stitchcentral.stitchcentralservices.client.dto;
 
 import com.stitchcentral.stitchcentralservices.util.enums.AppoinmentStatus;
+import com.stitchcentral.stitchcentralservices.util.enums.AppoinmentType;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -14,10 +15,10 @@ public class AppointmentsDTO {
     private int id;
     private int customer_Id;
     private Date appointment_date;
-    private String type;
+    private AppoinmentType type;
     private AppoinmentStatus status;
     private String description;
-    private ClientSampleDTO sample;
+    private ClientSampleDTO client_sample;
     private CustomerDTO customer;
 
 }

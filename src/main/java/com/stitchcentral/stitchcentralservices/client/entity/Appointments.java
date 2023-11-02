@@ -1,6 +1,7 @@
 package com.stitchcentral.stitchcentralservices.client.entity;
 
 import com.stitchcentral.stitchcentralservices.util.enums.AppoinmentStatus;
+import com.stitchcentral.stitchcentralservices.util.enums.AppoinmentType;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -19,8 +20,12 @@ public class Appointments {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
 
+    @Temporal(TemporalType.DATE)
     private Date appointment_date;
-    private String type;
+
+    @Enumerated(EnumType.STRING)
+    private AppoinmentType type;
+
     private String description;
 
     @Enumerated(EnumType.STRING)

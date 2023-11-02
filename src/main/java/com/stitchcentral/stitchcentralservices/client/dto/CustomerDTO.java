@@ -16,7 +16,7 @@ public class CustomerDTO {
     private String last_name;
     private String address;
     private String city;
-    private String postal_code;
+    private int postal_code;
     private String company;
     private String university;
     private String club;
