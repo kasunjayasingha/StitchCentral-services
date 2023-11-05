@@ -65,10 +65,10 @@ public class AppoinmentsServiceImp implements AppointmentsService {
 
 //                  appoinment save and assign again save appointment to appointments object
                     appointments = appoinmentsRepo.save(appointments);
-                    System.out.println("appointments----- "+appointments);
+//                    System.out.println("appointments----- "+appointments);
 
                     Client_Sample clientSample = new Client_Sample();
-                    System.out.println("appointmentsDTO.getSample() "+appointmentsDTO.getClient_sample());
+//                    System.out.println("appointmentsDTO.getSample() "+appointmentsDTO.getClient_sample());
 
                     clientSample.setFile_name(appointmentsDTO.getClient_sample().getFile_name());
                     clientSample.setFile_type(appointmentsDTO.getClient_sample().getFile_type());

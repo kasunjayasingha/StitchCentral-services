@@ -31,7 +31,7 @@ public class Appointments {
     @Enumerated(EnumType.STRING)
     private AppoinmentStatus status;
 
-    @OneToOne
+    @ManyToOne
     @JoinColumn(name = "customer_Id")
     private Customer customer;
 

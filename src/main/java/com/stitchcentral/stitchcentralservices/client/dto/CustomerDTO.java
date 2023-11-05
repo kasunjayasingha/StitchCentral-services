@@ -1,6 +1,7 @@
 package com.stitchcentral.stitchcentralservices.client.dto;
 
 
+import com.stitchcentral.stitchcentralservices.util.enums.CustomerTypes;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -25,4 +26,5 @@ public class CustomerDTO {
     private String password;
     private Date create_date;
     private Date update_date;
+    private CustomerTypes customer_type;
 }

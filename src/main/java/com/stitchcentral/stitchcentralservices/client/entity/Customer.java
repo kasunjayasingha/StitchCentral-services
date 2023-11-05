@@ -1,11 +1,14 @@
 package com.stitchcentral.stitchcentralservices.client.entity;
 
+import com.stitchcentral.stitchcentralservices.util.enums.CustomerTypes;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.antlr.v4.runtime.misc.NotNull;
 
 import java.util.Date;
+import java.util.List;
 
 @Entity
 @AllArgsConstructor
@@ -29,8 +32,11 @@ public class Customer {
     private String phone_no;
     private String password;
 
-    @OneToOne(mappedBy = "customer")
-    private Appointments appointments;
+    @OneToMany(mappedBy = "customer")
+    private List<Appointments> appointments;
+
+    @Enumerated(EnumType.STRING)
+    private CustomerTypes customer_type;
 
 
     @Temporal(TemporalType.DATE)

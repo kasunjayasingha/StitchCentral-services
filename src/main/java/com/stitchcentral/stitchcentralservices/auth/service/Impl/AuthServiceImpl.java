@@ -2,7 +2,9 @@ package com.stitchcentral.stitchcentralservices.auth.service.Impl;
 
 
 import com.stitchcentral.stitchcentralservices.auth.service.AuthService;
+import com.stitchcentral.stitchcentralservices.client.entity.Appointments;
 import com.stitchcentral.stitchcentralservices.client.entity.Customer;
+import com.stitchcentral.stitchcentralservices.client.repository.AppoinmentsRepo;
 import com.stitchcentral.stitchcentralservices.client.repository.CustomerRepo;
 import com.stitchcentral.stitchcentralservices.util.CommonResponse;
 import com.stitchcentral.stitchcentralservices.util.enums.AppoinmentStatus;
@@ -18,6 +20,7 @@ public class AuthServiceImpl implements AuthService {
 
     @Autowired
     CustomerRepo customerRepo;
+    AppoinmentsRepo appoinmentsRepo;
 
     @Override
     public String checkEmailIsPresent(String email) {
