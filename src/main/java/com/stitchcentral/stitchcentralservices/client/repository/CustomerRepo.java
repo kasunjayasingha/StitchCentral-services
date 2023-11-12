@@ -17,4 +17,6 @@ public interface CustomerRepo extends JpaRepository<Customer, Integer> {
 
     Optional<Customer> findByEmailAndAppointments_Status(String email, AppoinmentStatus status);
 
+    Optional<Customer> findByEmailAndPassword(String email, String password);
+
 }
