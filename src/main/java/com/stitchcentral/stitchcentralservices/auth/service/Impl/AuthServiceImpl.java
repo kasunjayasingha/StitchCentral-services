@@ -54,6 +54,7 @@ public class AuthServiceImpl implements AuthService {
                 Optional<Customer> checkAuth = customerRepo.findByEmailAndPassword(loginReqestDTO.getEmail(), loginReqestDTO.getPassword());
 
                 if (checkAuth.isPresent()){
+
                     return new CommonResponse(true, "Login Success").toString();
                 }else{
                     return new CommonResponse(false, "Login Failed").toString();
