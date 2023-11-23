@@ -1,5 +1,6 @@
 package com.stitchcentral.stitchcentralservices.client.entity;
 
+import com.stitchcentral.stitchcentralservices.admin.entity.OrderDetails;
 import com.stitchcentral.stitchcentralservices.util.enums.AppoinmentStatus;
 import com.stitchcentral.stitchcentralservices.util.enums.AppoinmentType;
 import jakarta.persistence.*;
@@ -8,6 +9,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.util.Date;
+import java.util.List;
 
 @Entity
 @AllArgsConstructor
@@ -37,4 +39,7 @@ public class Appointments {
 
     @OneToOne(mappedBy = "appointments")
     private Client_Sample client_sample;
+
+    @OneToMany(mappedBy = "appointments")
+    private List<OrderDetails> orderDetails;
 }

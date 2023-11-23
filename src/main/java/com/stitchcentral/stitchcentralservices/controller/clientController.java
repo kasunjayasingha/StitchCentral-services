@@ -32,4 +32,10 @@ private  ClientService clientService;
         LOGGER.info("getCustomer method is called");
         return clientService.getCustomer(email);
     }
+
+    @RequestMapping(value = "/getAllCustomer" ,method = RequestMethod.GET,produces = "application/json")
+    public List<CustomerDTO> getAllCustomer() {
+        LOGGER.info("getAllCustomer method is called");
+        return clientService.getAllCustomer();
+    }
 }
