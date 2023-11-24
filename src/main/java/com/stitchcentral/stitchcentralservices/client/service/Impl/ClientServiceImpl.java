@@ -39,7 +39,7 @@ public class ClientServiceImpl implements ClientService {
                     System.out.println("22222 "+customer.getFirst_name());
                 }
 
-                return new CommonResponse(false, "Customer already exists").toString();
+                return new CommonResponse(false, "Customer already exists " + ss.get().getEmail()).toString();
             }else {
                 customerRepo.save(modelMapper.map(customerDTO, Customer.class));
 //                return new CommonResponse(true, "Customer saved successfully");

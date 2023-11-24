@@ -59,7 +59,7 @@ public class AppoinmentsServiceImp implements AppointmentsService {
 
 //              Check if appointment already exists with status PENDING
                 if(appointmentsFind.isPresent()){
-                    return new CommonResponse(false, "Appointment already exists").toString();
+                    return new CommonResponse(false, "Pending appointment already exists").toString();
                 }else{
 //                    Save appointment
                     Appointments appointments = new Appointments();
