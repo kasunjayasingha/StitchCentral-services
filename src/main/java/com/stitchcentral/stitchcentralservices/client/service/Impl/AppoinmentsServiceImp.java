@@ -1,5 +1,8 @@
 package com.stitchcentral.stitchcentralservices.client.service.Impl;
 
+import com.stitchcentral.stitchcentralservices.admin.dto.OrderDetailsDTO;
+import com.stitchcentral.stitchcentralservices.admin.entity.OrderDetails;
+import com.stitchcentral.stitchcentralservices.admin.repository.OrderDetailsRepo;
 import com.stitchcentral.stitchcentralservices.client.dto.AppointmentsDTO;
 import com.stitchcentral.stitchcentralservices.client.entity.Appointments;
 import com.stitchcentral.stitchcentralservices.client.entity.Client_Sample;
@@ -33,6 +36,9 @@ public class AppoinmentsServiceImp implements AppointmentsService {
     Client_SampleRepo clientSampleRepo;
 
     @Autowired
+    OrderDetailsRepo orderDetailsRepo;
+
+    @Autowired
     ModelMapper modelMapper;
 
     private static final String CUSTOMER_NOT_FOUND = "Customer not found";
@@ -53,7 +59,7 @@ public class AppoinmentsServiceImp implements AppointmentsService {
 
 //              Check if appointment already exists with status PENDING
                 if(appointmentsFind.isPresent()){
-                    return new CommonResponse(false, "Appointment already exists").toString();
+                    return new CommonResponse(false, "Pending appointment already exists").toString();
                 }else{
 //                    Save appointment
                     Appointments appointments = new Appointments();
@@ -201,5 +207,71 @@ public class AppoinmentsServiceImp implements AppointmentsService {
             e.printStackTrace();
             return new CommonResponse(false, e.getMessage()).toString();
         }
+    }
+
+    @Override
+    public List<AppointmentsDTO> getAllAppoinment(AppoinmentStatus status) {
+        List<Appointments> appointmentsList = appoinmentsRepo.findByStatus(status);
+        if(!appointmentsList.isEmpty()) {
+            List<AppointmentsDTO> appointmentsDTOList = new ArrayList<>();
+
+            for(Appointments appointments : appointmentsList) {
+                AppointmentsDTO appointmentsDTO = modelMapper.map(appointments, AppointmentsDTO.class);
+
+                List<OrderDetails> orderDetailsList = orderDetailsRepo.getAllByAppointments_Id(appointments.getId());
+                if(!orderDetailsList.isEmpty()) {
+                    List<OrderDetailsDTO> orderDetailsDTOList = new ArrayList<>();
+                    for(OrderDetails orderDetails : orderDetailsList) {
+                        OrderDetailsDTO orderDetailsDTO = modelMapper.map(orderDetails, OrderDetailsDTO.class);
+                        orderDetailsDTOList.add(orderDetailsDTO);
+
+                    }
+                    appointmentsDTO.setOrderDetails(orderDetailsDTOList);
+
+                }else {
+                    appointmentsDTO.setOrderDetails(null);
+                }
+
+                appointmentsDTOList.add(appointmentsDTO);
+            }
+
+            return appointmentsDTOList;
+
+//            appointmentsList.forEach(appointments -> {
+//                AppointmentsDTO appointmentsDTO = modelMapper.map(appointments, AppointmentsDTO.class);
+//                appointmentsDTOList.add(appointmentsDTO);
+//            });
+//            List<AppointmentsDTO> appointmentsDTOList = appointmentsList
+//                    .stream()
+//                    .map(appointments -> modelMapper.map(appointments, AppointmentsDTO.class))
+//                    .collect(java.util.stream.Collectors.toList());
+//            return appointmentsDTOList;
+        }else{
+            return null;
+        }
+    }
+
+    @Override
+    public String cancelAppoinment(AppointmentsDTO appointmentsDTO) {
+        System.out.println("cancelAppoinment method is called-- "+appointmentsDTO.getId());
+
+        try{
+            List<Appointments> appointmentsFind = appoinmentsRepo.findById(appointmentsDTO.getId());
+            if(!appointmentsFind.isEmpty()){
+                for(Appointments appointments : appointmentsFind) {
+                    appointments.setStatus(AppoinmentStatus.CANCELLED);
+                    appoinmentsRepo.save(appointments);
+                }
+                return new CommonResponse(true, "Appointment cancelled successfully").toString();
+            }else {
+                return new CommonResponse(false, "Appointment not found").toString();
+            }
+
+        }catch (Exception e){
+            e.printStackTrace();
+            return new CommonResponse(false, e.getMessage()).toString();
+        }
+
+
     }
 }

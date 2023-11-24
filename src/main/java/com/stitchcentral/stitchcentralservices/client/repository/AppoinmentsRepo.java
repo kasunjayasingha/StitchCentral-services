@@ -17,5 +17,6 @@ public interface AppoinmentsRepo extends JpaRepository<Appointments, Integer> {
 
     List<Appointments> findByCustomer_Email(String email);
     Optional<Appointments> findByStatusAndCustomer_Email(AppoinmentStatus status, String email);
+    List<Appointments> findByStatus(AppoinmentStatus status);
 
 }
