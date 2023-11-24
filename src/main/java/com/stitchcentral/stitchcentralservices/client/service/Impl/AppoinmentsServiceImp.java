@@ -270,16 +270,14 @@ public class AppoinmentsServiceImp implements AppointmentsService {
                         appointments.setStatus(AppoinmentStatus.ACCEPTED);
                         appoinmentsRepo.save(appointments);
 
-
-
                         msg.setFrom("stichcentral@gmail.com");
                         msg.setTo(appointments.getCustomer().getEmail());
                         msg.setSubject("Appointment Accepted!");
-                        msg.setText("Your appointment has been accepted. Please Contact us for further details.");
+                        msg.setText("Hello "+appointments.getCustomer().getFirst_name()+"" +
+                                ",\n\nYour appointment has been accepted. We will contact you on "+appointments.getAppointment_date()+
+                                "\n\nThank you,\nStitchCentral");
                         javaMailSender.send(msg);
                         System.out.println("Email sent successfully");
-
-
 
                     }else {
                         appointments.setStatus(AppoinmentStatus.CANCELLED);
@@ -289,7 +287,9 @@ public class AppoinmentsServiceImp implements AppointmentsService {
                         msg.setFrom("stichcentral@gmail.com");
                         msg.setTo(appointments.getCustomer().getEmail());
                         msg.setSubject("Appointment Cancelled!");
-                        msg.setText("Your appointment has been cancelled. Because of "+appointmentsDTO.getCancellationReason());
+                        msg.setText("Hello "+appointments.getCustomer().getFirst_name()+"" +
+                                ",\n\nYour appointment has been cancelled. Because of "+appointments.getCancellationReason()+"" +
+                                "\n\nThank you,\nStitchCentral");
                         javaMailSender.send(msg);
                         System.out.println("Email sent successfully");
                     }
