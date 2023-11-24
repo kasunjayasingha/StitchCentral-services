@@ -30,6 +30,9 @@ public class Appointments {
 
     private String description;
 
+    @Column(name = "cancellation_reason")
+    private String cancellationReason;
+
     @Enumerated(EnumType.STRING)
     private AppoinmentStatus status;
 

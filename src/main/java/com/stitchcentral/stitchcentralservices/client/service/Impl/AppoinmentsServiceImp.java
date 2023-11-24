@@ -16,6 +16,8 @@ import com.stitchcentral.stitchcentralservices.util.enums.AppoinmentStatus;
 import jakarta.transaction.Transactional;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.mail.SimpleMailMessage;
+import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -40,6 +42,9 @@ public class AppoinmentsServiceImp implements AppointmentsService {
 
     @Autowired
     ModelMapper modelMapper;
+
+    @Autowired
+    private JavaMailSender javaMailSender;
 
     private static final String CUSTOMER_NOT_FOUND = "Customer not found";
 
@@ -254,13 +259,41 @@ public class AppoinmentsServiceImp implements AppointmentsService {
     @Override
     public String cancelAppoinment(AppointmentsDTO appointmentsDTO) {
         System.out.println("cancelAppoinment method is called-- "+appointmentsDTO.getId());
+        System.out.println("cancelAppoinment method is called-- "+appointmentsDTO.getStatus());
 
         try{
             List<Appointments> appointmentsFind = appoinmentsRepo.findById(appointmentsDTO.getId());
             if(!appointmentsFind.isEmpty()){
                 for(Appointments appointments : appointmentsFind) {
-                    appointments.setStatus(AppoinmentStatus.CANCELLED);
-                    appoinmentsRepo.save(appointments);
+                    SimpleMailMessage msg = new SimpleMailMessage();
+                    if(appointmentsDTO.getStatus().toString().equals("ACCEPTED")){
+                        appointments.setStatus(AppoinmentStatus.ACCEPTED);
+                        appoinmentsRepo.save(appointments);
+
+
+
+                        msg.setFrom("stichcentral@gmail.com");
+                        msg.setTo(appointments.getCustomer().getEmail());
+                        msg.setSubject("Appointment Accepted!");
+                        msg.setText("Your appointment has been accepted. Please Contact us for further details.");
+                        javaMailSender.send(msg);
+                        System.out.println("Email sent successfully");
+
+
+
+                    }else {
+                        appointments.setStatus(AppoinmentStatus.CANCELLED);
+                        appointments.setCancellationReason(appointmentsDTO.getCancellationReason());
+                        appoinmentsRepo.save(appointments);
+
+                        msg.setFrom("stichcentral@gmail.com");
+                        msg.setTo(appointments.getCustomer().getEmail());
+                        msg.setSubject("Appointment Cancelled!");
+                        msg.setText("Your appointment has been cancelled. Because of "+appointmentsDTO.getCancellationReason());
+                        javaMailSender.send(msg);
+                        System.out.println("Email sent successfully");
+                    }
+
                 }
                 return new CommonResponse(true, "Appointment cancelled successfully").toString();
             }else {
