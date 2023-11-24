@@ -64,9 +64,9 @@ public class AppoinmentsController {
     }
 
     @RequestMapping(value = "/saveOrderDetails", method = RequestMethod.POST, produces = "application/json")
-    public ResponseEntity<?> saveOrderDetails(@RequestBody OrderDetailsDTO orderDetailsDTO) {
+    public ResponseEntity<?> saveOrderDetails(@RequestBody AppointmentsDTO appointmentsDTO) {
         LOGGER.info("saveOrderDetails method is called");
-        return new ResponseEntity<String>(orderDetailsService.saveOrderDetails(orderDetailsDTO), HttpStatus.OK);
+        return new ResponseEntity<String>(orderDetailsService.saveOrderDetails(appointmentsDTO), HttpStatus.OK);
     }
 
 }

@@ -4,6 +4,7 @@ import com.stitchcentral.stitchcentralservices.admin.dto.OrderDetailsDTO;
 import com.stitchcentral.stitchcentralservices.admin.entity.OrderDetails;
 import com.stitchcentral.stitchcentralservices.admin.repository.OrderDetailsRepo;
 import com.stitchcentral.stitchcentralservices.admin.service.OrderDetailsService;
+import com.stitchcentral.stitchcentralservices.client.dto.AppointmentsDTO;
 import com.stitchcentral.stitchcentralservices.client.entity.Appointments;
 import com.stitchcentral.stitchcentralservices.client.repository.AppoinmentsRepo;
 import com.stitchcentral.stitchcentralservices.controller.clientController;
@@ -33,25 +34,30 @@ public class OrderDetailsServiceImpl implements OrderDetailsService {
     OrderDetailsRepo orderDetailsRepo;
 
     @Override
-    public String saveOrderDetails(OrderDetailsDTO orderDetailsDTO) {
+    public String saveOrderDetails(AppointmentsDTO appointmentsDTO) {
         LOGGER.info("saveOrderDetails method is called");
 
         try{
-            if(orderDetailsDTO == null || orderDetailsDTO.getAppointment_id() == 0){
+            if(appointmentsDTO.getOrderDetails() == null || appointmentsDTO.getOrderDetails().isEmpty() ){
                 return new CommonResponse(false, "Order Details is null").toString();
             }else {
-                List<Appointments> appointments = appoinmentsRepo.findById(orderDetailsDTO.getAppointment_id());
+                List<Appointments> appointments = appoinmentsRepo.findById(appointmentsDTO.getId());
                 if(!appointments.isEmpty()) {
-                    OrderDetails od = new OrderDetails();
-                    od.setAppointments(appointments.get(0));
-                    od.setQuantity(orderDetailsDTO.getQuantity());
-                    od.setMaterial(orderDetailsDTO.getMaterial());
-                    od.setDescription(orderDetailsDTO.getDescription());
-                    od.setDispatchDate(orderDetailsDTO.getDispatchDate());
-                    od.setSwingPlace(orderDetailsDTO.getSwingPlace());
-                    od.setAdvance(orderDetailsDTO.getAdvance());
+                    for(OrderDetailsDTO orderDetailsDTO : appointmentsDTO.getOrderDetails()) {
+                        OrderDetails od = new OrderDetails();
+                        od.setAppointments(appointments.get(0));
+                        od.setOrderType(orderDetailsDTO.getOrderType());
+                        od.setQuantity(orderDetailsDTO.getQuantity());
+                        od.setMaterial(orderDetailsDTO.getMaterial());
+                        od.setDescription(orderDetailsDTO.getDescription());
+                        od.setDispatchDate(orderDetailsDTO.getDispatchDate());
+                        od.setSwingPlace(orderDetailsDTO.getSwingPlace());
+                        od.setAdvance(orderDetailsDTO.getAdvance());
 
-                    orderDetailsRepo.save(od);
+                        orderDetailsRepo.save(od);
+                    }
+                    appointments.get(0).setStatus(appointmentsDTO.getStatus());
+                    appoinmentsRepo.save(appointments.get(0));
 
                     return new CommonResponse(true, "Order Details saved successfully").toString();
                 }else{

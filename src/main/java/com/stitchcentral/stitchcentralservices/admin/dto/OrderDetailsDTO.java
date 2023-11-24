@@ -11,6 +11,7 @@ import java.util.Date;
 @Data
 public class OrderDetailsDTO {
     private int id;
+    private String orderType;
     private String material;
     private int quantity;
     private String swingPlace;

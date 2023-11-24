@@ -18,6 +18,9 @@ public class OrderDetails {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
 
+    @Column(name = "order_type")
+    private String orderType;
+
     private String material;
     private int quantity;
 
