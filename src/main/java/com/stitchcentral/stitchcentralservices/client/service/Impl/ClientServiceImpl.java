@@ -39,7 +39,7 @@ public class ClientServiceImpl implements ClientService {
                     System.out.println("22222 "+customer.getFirst_name());
                 }
 
-                return new CommonResponse(false, "Customer already exists").toString();
+                return new CommonResponse(false, "Customer already exists " + ss.get().getEmail()).toString();
             }else {
                 customerRepo.save(modelMapper.map(customerDTO, Customer.class));
 //                return new CommonResponse(true, "Customer saved successfully");
@@ -86,6 +86,23 @@ public class ClientServiceImpl implements ClientService {
             } else {
                 return new ArrayList<>(); // Return an empty list if no customer is found
             }
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null; // You might want to handle exceptions more gracefully
+        }
+    }
+
+    @Override
+    public List<CustomerDTO> getAllCustomer() {
+        System.out.println("getAllCustomer method is called");
+        try {
+            List<Customer> customerList = customerRepo.findAll();
+            List<CustomerDTO> customerDTOList = customerList
+                    .stream()
+                    .map(customer -> modelMapper.map(customer, CustomerDTO.class))
+                    .collect(Collectors.toList());
+
+            return customerDTOList;
         } catch (Exception e) {
             e.printStackTrace();
             return null; // You might want to handle exceptions more gracefully

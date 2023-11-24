@@ -2,6 +2,7 @@ package com.stitchcentral.stitchcentralservices.client.service.Impl;
 
 import com.stitchcentral.stitchcentralservices.client.dto.AppointmentsDTO;
 import com.stitchcentral.stitchcentralservices.client.service.AppointmentsService;
+import com.stitchcentral.stitchcentralservices.util.enums.AppoinmentStatus;
 import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 
@@ -28,6 +29,16 @@ public class testImpl implements AppointmentsService {
 
     @Override
     public String deleteAppoinment(String email) {
+        return null;
+    }
+
+    @Override
+    public List<AppointmentsDTO> getAllAppoinment(AppoinmentStatus status) {
+        return null;
+    }
+
+    @Override
+    public String cancelAppoinment(AppointmentsDTO appointmentsDTO) {
         return null;
     }
 
