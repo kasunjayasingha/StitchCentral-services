@@ -20,6 +20,7 @@ public class AppointmentsDTO {
     private AppoinmentType type;
     private AppoinmentStatus status;
     private String description;
+    private String cancellationReason;
     private ClientSampleDTO client_sample;
     private CustomerDTO customer;
     private List<OrderDetailsDTO> orderDetails;
