@@ -5,6 +5,7 @@ import com.stitchcentral.stitchcentralservices.client.service.AppointmentsServic
 import com.stitchcentral.stitchcentralservices.util.enums.AppoinmentStatus;
 import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -39,6 +40,11 @@ public class testImpl implements AppointmentsService {
 
     @Override
     public String cancelAppoinment(AppointmentsDTO appointmentsDTO) {
+        return null;
+    }
+
+    @Override
+    public String uploadFile(AppointmentsDTO appointmentsDTO, MultipartFile file) {
         return null;
     }
 

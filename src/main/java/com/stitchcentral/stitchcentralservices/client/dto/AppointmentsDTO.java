@@ -6,6 +6,7 @@ import com.stitchcentral.stitchcentralservices.util.enums.AppoinmentType;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.Date;
 import java.util.List;
@@ -23,6 +24,7 @@ public class AppointmentsDTO {
     private String cancellationReason;
     private ClientSampleDTO client_sample;
     private CustomerDTO customer;
+//    private MultipartFile file;
     private List<OrderDetailsDTO> orderDetails;
 
 }

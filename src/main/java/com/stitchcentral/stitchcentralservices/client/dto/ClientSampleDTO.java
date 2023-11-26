@@ -14,7 +14,7 @@ public class ClientSampleDTO {
     private int id;
     private String file_name;
     private String file_type;
-    private String path;
+    private byte[] fileData;
     private String relative_path;
     private int appointment_id;
     private Date create_date;

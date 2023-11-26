@@ -19,7 +19,11 @@ public class Client_Sample {
 
     private String file_name;
     private String file_type;
-    private String path;
+
+    @Lob
+    @Column(name = "file_data", length = 100000)
+    private byte[] fileData;
+
     private String relative_path;
 
 //    private int customer_id;

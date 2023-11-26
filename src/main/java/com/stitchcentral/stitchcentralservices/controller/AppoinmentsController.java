@@ -8,8 +8,10 @@ import com.stitchcentral.stitchcentralservices.util.enums.AppoinmentStatus;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 import java.util.logging.Logger;
@@ -67,5 +69,26 @@ public class AppoinmentsController {
         LOGGER.info("saveOrderDetails method is called");
         return new ResponseEntity<String>(orderDetailsService.saveOrderDetails(appointmentsDTO), HttpStatus.OK);
     }
+
+    @PostMapping(value = "/uploadFile", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<?> uploadFile(@RequestPart("appointmentInfo") AppointmentsDTO appointmentsDTO,
+                                        @RequestPart("file")  MultipartFile file) {
+        LOGGER.info("uploadFile method is called");
+        return new ResponseEntity<String>(appointmentsService.uploadFile(appointmentsDTO,file), HttpStatus.OK);
+    }
+
+//    @RequestMapping(value = "/uploadFile", method = RequestMethod.POST)
+//    public ResponseEntity<?> uploadFile(@RequestParam("file")  MultipartFile file) {
+//        LOGGER.info("uploadFile method is called");
+//        return new ResponseEntity<String>(appointmentsService.uploadFile(file), HttpStatus.OK);
+//    }
+
+//    @RequestMapping(value = "/uploadFile", method = RequestMethod.POST)
+//    public ResponseEntity<?> uploadFile(@RequestParam("appoinment") AppointmentsDTO appointmentsDTO) {
+//        LOGGER.info("uploadFile method is called");
+//        return new ResponseEntity<String>(appointmentsService.uploadFile(appointmentsDTO), HttpStatus.OK);
+//    }
+
+
 
 }

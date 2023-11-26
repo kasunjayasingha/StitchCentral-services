@@ -5,6 +5,7 @@ import com.stitchcentral.stitchcentralservices.client.entity.Customer;
 import com.stitchcentral.stitchcentralservices.client.repository.CustomerRepo;
 import com.stitchcentral.stitchcentralservices.client.service.ClientService;
 import com.stitchcentral.stitchcentralservices.util.CommonResponse;
+import com.stitchcentral.stitchcentralservices.util.enums.CustomerTypes;
 import jakarta.transaction.Transactional;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,13 +33,21 @@ public class ClientServiceImpl implements ClientService {
 
         try{
             Optional<Customer> ss=customerRepo.findByEmail(customerDTO.getEmail());
-           List<Customer> list= customerRepo.findByEmailAndId(customerDTO.getEmail(),7);
+//           List<Customer> list= customerRepo.findByEmailAndId(customerDTO.getEmail(),7);
             if (ss.isPresent()) {
 
-                for (Customer customer : list) {
-                    System.out.println("22222 "+customer.getFirst_name());
+                if(customerDTO.getCustomer_type().equals(CustomerTypes.GUEST)) {
+                    ss.get().setFirst_name(customerDTO.getFirst_name());
+                    ss.get().setLast_name(customerDTO.getLast_name());
+                    ss.get().setAddress(customerDTO.getAddress());
+                    ss.get().setCompany(customerDTO.getCompany());
+                    ss.get().setPhone_no(customerDTO.getPhone_no());
+                    ss.get().setCity(customerDTO.getCity());
+                    ss.get().setClub(customerDTO.getClub());
+                    ss.get().setUniversity(customerDTO.getUniversity());
+                    ss.get().setUpdate_date(new java.sql.Date(System.currentTimeMillis()));
+                    return new CommonResponse(false, "Customer already exists " + ss.get().getEmail()).toString();
                 }
-
                 return new CommonResponse(false, "Customer already exists " + ss.get().getEmail()).toString();
             }else {
                 customerRepo.save(modelMapper.map(customerDTO, Customer.class));

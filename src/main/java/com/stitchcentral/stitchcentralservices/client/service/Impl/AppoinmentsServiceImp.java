@@ -4,6 +4,7 @@ import com.stitchcentral.stitchcentralservices.admin.dto.OrderDetailsDTO;
 import com.stitchcentral.stitchcentralservices.admin.entity.OrderDetails;
 import com.stitchcentral.stitchcentralservices.admin.repository.OrderDetailsRepo;
 import com.stitchcentral.stitchcentralservices.client.dto.AppointmentsDTO;
+import com.stitchcentral.stitchcentralservices.client.dto.ClientSampleDTO;
 import com.stitchcentral.stitchcentralservices.client.entity.Appointments;
 import com.stitchcentral.stitchcentralservices.client.entity.Client_Sample;
 import com.stitchcentral.stitchcentralservices.client.entity.Customer;
@@ -12,6 +13,7 @@ import com.stitchcentral.stitchcentralservices.client.repository.Client_SampleRe
 import com.stitchcentral.stitchcentralservices.client.repository.CustomerRepo;
 import com.stitchcentral.stitchcentralservices.client.service.AppointmentsService;
 import com.stitchcentral.stitchcentralservices.util.CommonResponse;
+import com.stitchcentral.stitchcentralservices.util.FileCompress;
 import com.stitchcentral.stitchcentralservices.util.enums.AppoinmentStatus;
 import jakarta.transaction.Transactional;
 import org.modelmapper.ModelMapper;
@@ -19,8 +21,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
@@ -78,21 +82,51 @@ public class AppoinmentsServiceImp implements AppointmentsService {
                     appointments = appoinmentsRepo.save(appointments);
 //                    System.out.println("appointments----- "+appointments);
 
-                    Client_Sample clientSample = new Client_Sample();
-//                    System.out.println("appointmentsDTO.getSample() "+appointmentsDTO.getClient_sample());
+//                    if (!appointmentsDTO.getFile().isEmpty()) {
+//                        Client_Sample clientSample = new Client_Sample();
+//                        clientSample.setFile_name(appointmentsDTO.getFile().getOriginalFilename());
+//                        clientSample.setFile_type(appointmentsDTO.getFile().getContentType());
+//                        clientSample.setFileData(FileCompress.compressBytes(appointmentsDTO.getFile().getBytes()));
+//                        clientSample.setRelative_path(appointmentsDTO.getFile().getOriginalFilename());
+//                        clientSample.setCreate_date(appointmentsDTO.getClient_sample().getCreate_date());
+//                        clientSample.setUpdate_date(appointmentsDTO.getClient_sample().getUpdate_date());
+//
+//                        if(clientSample.getFileData().length > 100000){
+//                            return new CommonResponse(false, "File size is too large").toString();
+//                        }
+//
+//                        clientSample.setAppointments(appointments);
+//                        clientSampleRepo.save(modelMapper.map(clientSample, Client_Sample.class));
+//                    }
 
-                    clientSample.setFile_name(appointmentsDTO.getClient_sample().getFile_name());
-                    clientSample.setFile_type(appointmentsDTO.getClient_sample().getFile_type());
-                    clientSample.setPath(appointmentsDTO.getClient_sample().getPath());
-                    clientSample.setRelative_path(appointmentsDTO.getClient_sample().getRelative_path());
-                    clientSample.setCreate_date(appointmentsDTO.getClient_sample().getCreate_date());
-                    clientSample.setUpdate_date(appointmentsDTO.getClient_sample().getUpdate_date());
-                    clientSample.setAppointments(appointments);
-                    clientSampleRepo.save(modelMapper.map(clientSample, Client_Sample.class));
+//                    if(appointmentsDTO.getClient_sample() != null){
+//                        Client_Sample clientSample = new Client_Sample();
+//                        clientSample.setFile_name(appointmentsDTO.getClient_sample().getFile_name());
+//                        clientSample.setFile_type(appointmentsDTO.getClient_sample().getFile_type());
+//                        clientSample.setFileData(appointmentsDTO.getClient_sample().getFileData());
+//                        clientSample.setRelative_path(appointmentsDTO.getClient_sample().getRelative_path());
+//                        clientSample.setCreate_date(appointmentsDTO.getClient_sample().getCreate_date());
+//                        clientSample.setUpdate_date(appointmentsDTO.getClient_sample().getUpdate_date());
+//                        clientSample.setAppointments(appointments);
+//                        clientSampleRepo.save(modelMapper.map(clientSample, Client_Sample.class));
+//
+//                        return new CommonResponse(true, "Appointment saved successfully").toString();
+//                    }
+//                    Client_Sample clientSample = new Client_Sample();
+////                    System.out.println("appointmentsDTO.getSample() "+appointmentsDTO.getClient_sample());
+//
+//                    clientSample.setFile_name(appointmentsDTO.getClient_sample().getFile_name());
+//                    clientSample.setFile_type(appointmentsDTO.getClient_sample().getFile_type());
+//                    clientSample.setFileData(appointmentsDTO.getClient_sample().getFileData());
+//                    clientSample.setRelative_path(appointmentsDTO.getClient_sample().getRelative_path());
+//                    clientSample.setCreate_date(appointmentsDTO.getClient_sample().getCreate_date());
+//                    clientSample.setUpdate_date(appointmentsDTO.getClient_sample().getUpdate_date());
+//                    clientSample.setAppointments(appointments);
+//                    clientSampleRepo.save(modelMapper.map(clientSample, Client_Sample.class));
 //                    appointments.setClient_sample(appointmentsDTO.getSample());
 //                    appoinmentsRepo.save(modelMapper.map(appointmentsDTO, Appointments.class));
 
-                    return new CommonResponse(true, "Appointment saved successfully").toString();
+                    return new CommonResponse(true, ""+appointments.getId()).toString();
                 }
 
 //                appoinmentsRepo.save(modelMapper.map(appointmentsDTO, Appointments.class));
@@ -168,7 +202,7 @@ public class AppoinmentsServiceImp implements AppointmentsService {
                         Client_Sample clientSample = clientSampleFind.get();
                         clientSample.setFile_name(appointmentsDTO.getClient_sample().getFile_name());
                         clientSample.setFile_type(appointmentsDTO.getClient_sample().getFile_type());
-                        clientSample.setPath(appointmentsDTO.getClient_sample().getPath());
+//                        clientSample.setPath(appointmentsDTO.getClient_sample().getPath());
                         clientSample.setRelative_path(appointmentsDTO.getClient_sample().getRelative_path());
                         clientSample.setCreate_date(appointmentsDTO.getClient_sample().getCreate_date());
                         clientSample.setUpdate_date(appointmentsDTO.getClient_sample().getUpdate_date());
@@ -306,5 +340,42 @@ public class AppoinmentsServiceImp implements AppointmentsService {
         }
 
 
+    }
+
+    @Override
+    public String uploadFile(AppointmentsDTO appointmentsDTO, MultipartFile file) {
+        System.out.println("uploadFile method is called-- "+appointmentsDTO.toString());
+        System.out.println("uploadFile method is called-- "+appointmentsDTO.toString());
+        try{
+            Optional<Customer> customerFind = customerRepo.findByEmail(appointmentsDTO.getCustomer().getEmail());
+            if(customerFind.isPresent()) {
+
+                if(!file.isEmpty()){
+                    ClientSampleDTO clientSample = new ClientSampleDTO();
+                    clientSample.setFile_name(file.getOriginalFilename());
+                    clientSample.setFile_type(file.getContentType());
+                    clientSample.setFileData(FileCompress.compressBytes(file.getBytes()));
+                    clientSample.setRelative_path(file.getOriginalFilename());
+                    clientSample.setCreate_date(appointmentsDTO.getClient_sample().getCreate_date());
+                    clientSample.setUpdate_date(appointmentsDTO.getClient_sample().getUpdate_date());
+
+                    if(clientSample.getFileData().length > 100000){
+                        return new CommonResponse(false, "File size is too large").toString();
+                    }
+
+                    appointmentsDTO.setClient_sample(clientSample);
+                    return saveAppointment(appointmentsDTO);
+                }else {
+                    return new CommonResponse(false, "File is empty").toString();
+                }
+
+
+            }else{
+                return new CommonResponse(false, CUSTOMER_NOT_FOUND).toString();
+            }
+        }catch (Exception e){
+            e.printStackTrace();
+            return new CommonResponse(false, e.getMessage()).toString();
+        }
     }
 }
