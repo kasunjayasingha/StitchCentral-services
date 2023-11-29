@@ -58,6 +58,7 @@ public class AuthServiceImpl implements AuthService {
 
                 if (checkAuth.isPresent() && checkAuth.get().getCustomer_type().equals(CustomerTypes.REGULAR)) {
                     CustomerDTO customerDTO = new CustomerDTO();
+                    customerDTO.setId(checkAuth.get().getId());
                     customerDTO.setFirst_name(checkAuth.get().getFirst_name());
                     customerDTO.setLast_name(checkAuth.get().getLast_name());
                     customerDTO.setAddress(checkAuth.get().getAddress());

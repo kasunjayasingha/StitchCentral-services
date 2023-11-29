@@ -10,4 +10,5 @@ public interface ClientService {
     String saveCustomer(CustomerDTO customerDTO);
     List<CustomerDTO> getCustomer(String email);
     List<CustomerDTO> getAllCustomer();
+    String updateCustomer(CustomerDTO customerDTO);
 }

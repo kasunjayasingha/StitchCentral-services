@@ -38,4 +38,10 @@ private  ClientService clientService;
         LOGGER.info("getAllCustomer method is called");
         return clientService.getAllCustomer();
     }
+
+    @RequestMapping(value = "/updateCustomer",method = RequestMethod.POST,produces = "application/json")
+    public ResponseEntity<?> updateCustomer(@RequestBody CustomerDTO customerDTO) {
+        LOGGER.info("updateCustomer method is called");
+        return new ResponseEntity<String>(clientService.updateCustomer(customerDTO), HttpStatus.OK);
+    }
 }

@@ -122,5 +122,42 @@ public class ClientServiceImpl implements ClientService {
         }
     }
 
+    @Override
+    public String updateCustomer(CustomerDTO customerDTO) {
+        System.out.println("updateCustomer method is called -- " + customerDTO.toString());
+        try{
+            if(customerDTO.getId() > 0) {
+                Optional<Customer> customerOptional = customerRepo.findById(customerDTO.getId());
+                if (customerOptional.isPresent()) {
+                    Customer customer = customerOptional.get();
+                    customer.setFirst_name(customerDTO.getFirst_name());
+                    customer.setLast_name(customerDTO.getLast_name());
+                    customer.setEmail(customerDTO.getEmail());
+                    customer.setAddress(customerDTO.getAddress());
+                    customer.setCompany(customerOptional.get().getCompany());
+                    customer.setPhone_no(customerDTO.getPhone_no());
+                    customer.setCity(customerOptional.get().getCity());
+                    customer.setClub(customerOptional.get().getClub());
+                    customer.setCustomer_type(customerOptional.get().getCustomer_type());
+                    customer.setUniversity(customerOptional.get().getUniversity());
+                    if (!(customerDTO.getPassword().equals(""))) {
+                        customer.setPassword(customerDTO.getPassword());
+                    }
+                    customer.setPassword(customerOptional.get().getPassword());
+                    customer.setUpdate_date(new java.sql.Date(System.currentTimeMillis()));
+                    customerRepo.save(customer);
+                    return new CommonResponse(true, "Customer updated successfully").toString();
+                } else {
+                    return new CommonResponse(false, "Customer not found").toString();
+                }
+            }
+            return new CommonResponse(false, "Customer id is empty").toString();
+        } catch (Exception e) {
+            e.printStackTrace();
+            return new CommonResponse(false, e.getMessage()).toString();
+        }
+
+    }
+
 
 }
