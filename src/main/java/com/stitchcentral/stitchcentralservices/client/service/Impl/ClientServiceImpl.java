@@ -36,7 +36,7 @@ public class ClientServiceImpl implements ClientService {
 //           List<Customer> list= customerRepo.findByEmailAndId(customerDTO.getEmail(),7);
             if (ss.isPresent()) {
 
-                if(customerDTO.getCustomer_type().equals(CustomerTypes.GUEST)) {
+                if(customerDTO.getCustomer_type().equals(CustomerTypes.GUEST) || ss.get().getCustomer_type().equals(CustomerTypes.GUEST)){
                     ss.get().setFirst_name(customerDTO.getFirst_name());
                     ss.get().setLast_name(customerDTO.getLast_name());
                     ss.get().setAddress(customerDTO.getAddress());
@@ -44,7 +44,11 @@ public class ClientServiceImpl implements ClientService {
                     ss.get().setPhone_no(customerDTO.getPhone_no());
                     ss.get().setCity(customerDTO.getCity());
                     ss.get().setClub(customerDTO.getClub());
+                    ss.get().setCustomer_type(customerDTO.getCustomer_type());
                     ss.get().setUniversity(customerDTO.getUniversity());
+                    if(customerDTO.getCustomer_type().equals(CustomerTypes.REGULAR)) {
+                        ss.get().setPassword(customerDTO.getPassword());
+                    }
                     ss.get().setUpdate_date(new java.sql.Date(System.currentTimeMillis()));
                     return new CommonResponse(false, "Customer already exists " + ss.get().getEmail()).toString();
                 }

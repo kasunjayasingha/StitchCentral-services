@@ -1,9 +1,10 @@
 package com.stitchcentral.stitchcentralservices.auth.service;
 
 import com.stitchcentral.stitchcentralservices.auth.dto.LoginReqestDTO;
+import com.stitchcentral.stitchcentralservices.client.dto.CustomerDTO;
 
 public interface AuthService {
 
     String checkEmailIsPresent(String email);
-    String Login(LoginReqestDTO loginReqestDTO);
+    CustomerDTO Login(LoginReqestDTO loginReqestDTO);
 }

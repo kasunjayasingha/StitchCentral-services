@@ -1,6 +1,7 @@
 package com.stitchcentral.stitchcentralservices.client.service.Impl;
 
 import com.stitchcentral.stitchcentralservices.client.dto.AppointmentsDTO;
+import com.stitchcentral.stitchcentralservices.client.dto.ClientSampleDTO;
 import com.stitchcentral.stitchcentralservices.client.service.AppointmentsService;
 import com.stitchcentral.stitchcentralservices.util.enums.AppoinmentStatus;
 import jakarta.transaction.Transactional;
@@ -44,7 +45,12 @@ public class testImpl implements AppointmentsService {
     }
 
     @Override
-    public String uploadFile(AppointmentsDTO appointmentsDTO, MultipartFile file) {
+    public String uploadFile(MultipartFile file, String appointmentId) {
+        return null;
+    }
+
+    @Override
+    public ClientSampleDTO downloadFile(Integer appointmentId) {
         return null;
     }
 
