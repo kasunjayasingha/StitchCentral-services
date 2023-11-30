@@ -34,5 +34,11 @@ public class AuthController {
         return new ResponseEntity<CustomerDTO>(authService.Login(loginReqestDTO), HttpStatus.OK);
     }
 
+    @RequestMapping(value = "/checkOnlyEmailIPresent/{email}", method = RequestMethod.GET, produces = "application/json")
+    public ResponseEntity<?> checkOnlyEmailIPresent(@PathVariable String email) {
+        LOGGER.info("checkEmailIsPresent method is called");
+        return new ResponseEntity<String>(authService.checkOnlyEmailIPresent(email), HttpStatus.OK);
+    }
+
 
 }
