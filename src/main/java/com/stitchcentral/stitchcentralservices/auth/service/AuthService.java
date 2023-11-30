@@ -6,5 +6,6 @@ import com.stitchcentral.stitchcentralservices.client.dto.CustomerDTO;
 public interface AuthService {
 
     String checkEmailIsPresent(String email);
+    String checkOnlyEmailIPresent(String email);
     CustomerDTO Login(LoginReqestDTO loginReqestDTO);
 }

@@ -50,6 +50,25 @@ public class AuthServiceImpl implements AuthService {
     }
 
     @Override
+    public String checkOnlyEmailIPresent(String email) {
+        try{
+            if(!email.isEmpty()){
+                Optional<Customer> checkEmail = customerRepo.findByEmail(email);
+                if(checkEmail.isPresent()) {
+                    return new CommonResponse(true, "Email is present").toString();
+                }else{
+                    return new CommonResponse(false, "Email is not present").toString();
+                }
+            }else {
+                return new CommonResponse(false, "Email is empty").toString();
+            }
+        }catch (Exception e){
+            e.printStackTrace();
+            return new CommonResponse(false, e.getMessage()).toString();
+        }
+    }
+
+    @Override
     public CustomerDTO Login(LoginReqestDTO loginReqestDTO) {
         LOGGER.info("Login IMPL method is called");
         try{
