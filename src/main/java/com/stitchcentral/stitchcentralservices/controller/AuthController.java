@@ -29,9 +29,9 @@ public class AuthController {
     }
 
     @PostMapping(value = "/login", produces = "application/json")
-    public ResponseEntity<String> Login(@RequestBody LoginReqestDTO loginReqestDTO) {
+    public ResponseEntity<?> Login(@RequestBody LoginReqestDTO loginReqestDTO) {
         LOGGER.info("Login method is called");
-        return new ResponseEntity<String>(authService.Login(loginReqestDTO), HttpStatus.OK);
+        return new ResponseEntity<CustomerDTO>(authService.Login(loginReqestDTO), HttpStatus.OK);
     }
 
 

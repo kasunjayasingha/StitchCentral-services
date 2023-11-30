@@ -15,4 +15,6 @@ public class LoginReqestDTO {
 
     @NotNull
     private String password;
+
+    private String role;
 }

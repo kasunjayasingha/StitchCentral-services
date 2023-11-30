@@ -3,16 +3,21 @@ package com.stitchcentral.stitchcentralservices.controller;
 import com.stitchcentral.stitchcentralservices.admin.dto.OrderDetailsDTO;
 import com.stitchcentral.stitchcentralservices.admin.service.OrderDetailsService;
 import com.stitchcentral.stitchcentralservices.client.dto.AppointmentsDTO;
+import com.stitchcentral.stitchcentralservices.client.dto.ClientSampleDTO;
 import com.stitchcentral.stitchcentralservices.client.service.AppointmentsService;
 import com.stitchcentral.stitchcentralservices.util.enums.AppoinmentStatus;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.logging.Logger;
+import java.util.zip.DataFormatException;
 
 @RestController
 @RequestMapping("api/v1/appoinments")
@@ -51,7 +56,7 @@ public class AppoinmentsController {
     }
 
     @RequestMapping(value = "/getAllAppoinment/{status}", method = RequestMethod.GET, produces = "application/json")
-    public List<AppointmentsDTO> getAllAppoinment(@PathVariable AppoinmentStatus status) {
+    public List<AppointmentsDTO> getAllAppoinment(@PathVariable AppoinmentStatus status) throws DataFormatException, IOException {
         LOGGER.info("getAllAppoinment method is called");
         return appointmentsService.getAllAppoinment(status);
     }
@@ -67,5 +72,35 @@ public class AppoinmentsController {
         LOGGER.info("saveOrderDetails method is called");
         return new ResponseEntity<String>(orderDetailsService.saveOrderDetails(appointmentsDTO), HttpStatus.OK);
     }
+
+//    @PostMapping(value = "/uploadFile", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+//    public ResponseEntity<?> uploadFile(@RequestPart("appointmentInfo") AppointmentsDTO appointmentsDTO,
+//                                        @RequestPart("file")  MultipartFile file) {
+//        LOGGER.info("uploadFile method is called");
+//        return new ResponseEntity<String>(appointmentsService.uploadFile(appointmentsDTO,file), HttpStatus.OK);
+//    }
+
+    String appointmentId;
+    @RequestMapping(value = "/uploadFile", method = RequestMethod.POST, consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<?> uploadFile(@RequestPart("file")  MultipartFile file,
+                                        @RequestPart("appointmentId") String appointmentId
+    ) {
+        LOGGER.info("uploadFile method is called");
+        return new ResponseEntity<String>(appointmentsService.uploadFile(file, appointmentId), HttpStatus.OK);
+    }
+
+    @RequestMapping(value = "/downloadFile/{appointmentId}", method = RequestMethod.GET)
+    public ResponseEntity<?> downloadFile(@PathVariable Integer appointmentId) {
+        LOGGER.info("downloadFile method is called");
+        return new ResponseEntity<ClientSampleDTO>(appointmentsService.downloadFile(appointmentId), HttpStatus.OK);
+    }
+
+//    @RequestMapping(value = "/uploadFile", method = RequestMethod.POST)
+//    public ResponseEntity<?> uploadFile(@RequestParam("appoinment") AppointmentsDTO appointmentsDTO) {
+//        LOGGER.info("uploadFile method is called");
+//        return new ResponseEntity<String>(appointmentsService.uploadFile(appointmentsDTO), HttpStatus.OK);
+//    }
+
+
 
 }

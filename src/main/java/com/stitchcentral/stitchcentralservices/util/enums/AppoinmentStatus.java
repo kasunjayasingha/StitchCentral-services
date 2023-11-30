@@ -1,5 +1,5 @@
 package com.stitchcentral.stitchcentralservices.util.enums;
 
 public enum AppoinmentStatus {
-    PENDING, COMPLETED, CANCELLED
+    PENDING, COMPLETED, CANCELLED, ACCEPTED
 }

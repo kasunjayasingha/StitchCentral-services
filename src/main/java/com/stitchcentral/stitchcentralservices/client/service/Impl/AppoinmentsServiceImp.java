@@ -4,6 +4,7 @@ import com.stitchcentral.stitchcentralservices.admin.dto.OrderDetailsDTO;
 import com.stitchcentral.stitchcentralservices.admin.entity.OrderDetails;
 import com.stitchcentral.stitchcentralservices.admin.repository.OrderDetailsRepo;
 import com.stitchcentral.stitchcentralservices.client.dto.AppointmentsDTO;
+import com.stitchcentral.stitchcentralservices.client.dto.ClientSampleDTO;
 import com.stitchcentral.stitchcentralservices.client.entity.Appointments;
 import com.stitchcentral.stitchcentralservices.client.entity.Client_Sample;
 import com.stitchcentral.stitchcentralservices.client.entity.Customer;
@@ -12,15 +13,22 @@ import com.stitchcentral.stitchcentralservices.client.repository.Client_SampleRe
 import com.stitchcentral.stitchcentralservices.client.repository.CustomerRepo;
 import com.stitchcentral.stitchcentralservices.client.service.AppointmentsService;
 import com.stitchcentral.stitchcentralservices.util.CommonResponse;
+import com.stitchcentral.stitchcentralservices.util.FileCompress;
 import com.stitchcentral.stitchcentralservices.util.enums.AppoinmentStatus;
 import jakarta.transaction.Transactional;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.mail.SimpleMailMessage;
+import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
+import java.util.zip.DataFormatException;
 
 @Service("appointmentsService")
 @Transactional
@@ -40,6 +48,9 @@ public class AppoinmentsServiceImp implements AppointmentsService {
 
     @Autowired
     ModelMapper modelMapper;
+
+    @Autowired
+    private JavaMailSender javaMailSender;
 
     private static final String CUSTOMER_NOT_FOUND = "Customer not found";
 
@@ -73,21 +84,51 @@ public class AppoinmentsServiceImp implements AppointmentsService {
                     appointments = appoinmentsRepo.save(appointments);
 //                    System.out.println("appointments----- "+appointments);
 
-                    Client_Sample clientSample = new Client_Sample();
-//                    System.out.println("appointmentsDTO.getSample() "+appointmentsDTO.getClient_sample());
+//                    if (!appointmentsDTO.getFile().isEmpty()) {
+//                        Client_Sample clientSample = new Client_Sample();
+//                        clientSample.setFile_name(appointmentsDTO.getFile().getOriginalFilename());
+//                        clientSample.setFile_type(appointmentsDTO.getFile().getContentType());
+//                        clientSample.setFileData(FileCompress.compressBytes(appointmentsDTO.getFile().getBytes()));
+//                        clientSample.setRelative_path(appointmentsDTO.getFile().getOriginalFilename());
+//                        clientSample.setCreate_date(appointmentsDTO.getClient_sample().getCreate_date());
+//                        clientSample.setUpdate_date(appointmentsDTO.getClient_sample().getUpdate_date());
+//
+//                        if(clientSample.getFileData().length > 100000){
+//                            return new CommonResponse(false, "File size is too large").toString();
+//                        }
+//
+//                        clientSample.setAppointments(appointments);
+//                        clientSampleRepo.save(modelMapper.map(clientSample, Client_Sample.class));
+//                    }
 
-                    clientSample.setFile_name(appointmentsDTO.getClient_sample().getFile_name());
-                    clientSample.setFile_type(appointmentsDTO.getClient_sample().getFile_type());
-                    clientSample.setPath(appointmentsDTO.getClient_sample().getPath());
-                    clientSample.setRelative_path(appointmentsDTO.getClient_sample().getRelative_path());
-                    clientSample.setCreate_date(appointmentsDTO.getClient_sample().getCreate_date());
-                    clientSample.setUpdate_date(appointmentsDTO.getClient_sample().getUpdate_date());
-                    clientSample.setAppointments(appointments);
-                    clientSampleRepo.save(modelMapper.map(clientSample, Client_Sample.class));
+//                    if(appointmentsDTO.getClient_sample() != null){
+//                        Client_Sample clientSample = new Client_Sample();
+//                        clientSample.setFile_name(appointmentsDTO.getClient_sample().getFile_name());
+//                        clientSample.setFile_type(appointmentsDTO.getClient_sample().getFile_type());
+//                        clientSample.setFileData(appointmentsDTO.getClient_sample().getFileData());
+//                        clientSample.setRelative_path(appointmentsDTO.getClient_sample().getRelative_path());
+//                        clientSample.setCreate_date(appointmentsDTO.getClient_sample().getCreate_date());
+//                        clientSample.setUpdate_date(appointmentsDTO.getClient_sample().getUpdate_date());
+//                        clientSample.setAppointments(appointments);
+//                        clientSampleRepo.save(modelMapper.map(clientSample, Client_Sample.class));
+//
+//                        return new CommonResponse(true, "Appointment saved successfully").toString();
+//                    }
+//                    Client_Sample clientSample = new Client_Sample();
+////                    System.out.println("appointmentsDTO.getSample() "+appointmentsDTO.getClient_sample());
+//
+//                    clientSample.setFile_name(appointmentsDTO.getClient_sample().getFile_name());
+//                    clientSample.setFile_type(appointmentsDTO.getClient_sample().getFile_type());
+//                    clientSample.setFileData(appointmentsDTO.getClient_sample().getFileData());
+//                    clientSample.setRelative_path(appointmentsDTO.getClient_sample().getRelative_path());
+//                    clientSample.setCreate_date(appointmentsDTO.getClient_sample().getCreate_date());
+//                    clientSample.setUpdate_date(appointmentsDTO.getClient_sample().getUpdate_date());
+//                    clientSample.setAppointments(appointments);
+//                    clientSampleRepo.save(modelMapper.map(clientSample, Client_Sample.class));
 //                    appointments.setClient_sample(appointmentsDTO.getSample());
 //                    appoinmentsRepo.save(modelMapper.map(appointmentsDTO, Appointments.class));
 
-                    return new CommonResponse(true, "Appointment saved successfully").toString();
+                    return new CommonResponse(true, ""+appointments.getId()).toString();
                 }
 
 //                appoinmentsRepo.save(modelMapper.map(appointmentsDTO, Appointments.class));
@@ -158,18 +199,18 @@ public class AppoinmentsServiceImp implements AppointmentsService {
                     appointments.setType(appointmentsDTO.getType());
                     appointments= appoinmentsRepo.save(appointments);
 
-                    Optional<Client_Sample> clientSampleFind = clientSampleRepo.findByAppointments_IdOrAppointments_Customer_Email(appointments.getId(), appointmentsDTO.getCustomer().getEmail());
-                    if(clientSampleFind.isPresent()){
-                        Client_Sample clientSample = clientSampleFind.get();
-                        clientSample.setFile_name(appointmentsDTO.getClient_sample().getFile_name());
-                        clientSample.setFile_type(appointmentsDTO.getClient_sample().getFile_type());
-                        clientSample.setPath(appointmentsDTO.getClient_sample().getPath());
-                        clientSample.setRelative_path(appointmentsDTO.getClient_sample().getRelative_path());
-                        clientSample.setCreate_date(appointmentsDTO.getClient_sample().getCreate_date());
-                        clientSample.setUpdate_date(appointmentsDTO.getClient_sample().getUpdate_date());
-                        clientSample.setAppointments(appointments);
-                        clientSampleRepo.save(clientSample);
-                    }
+//                    Optional<Client_Sample> clientSampleFind = clientSampleRepo.findByAppointments_IdOrAppointments_Customer_Email(appointments.getId(), appointmentsDTO.getCustomer().getEmail());
+//                    if(clientSampleFind.isPresent()){
+//                        Client_Sample clientSample = clientSampleFind.get();
+//                        clientSample.setFile_name(appointmentsDTO.getClient_sample().getFile_name());
+//                        clientSample.setFile_type(appointmentsDTO.getClient_sample().getFile_type());
+////                        clientSample.setPath(appointmentsDTO.getClient_sample().getPath());
+//                        clientSample.setRelative_path(appointmentsDTO.getClient_sample().getRelative_path());
+//                        clientSample.setCreate_date(appointmentsDTO.getClient_sample().getCreate_date());
+//                        clientSample.setUpdate_date(appointmentsDTO.getClient_sample().getUpdate_date());
+//                        clientSample.setAppointments(appointments);
+//                        clientSampleRepo.save(clientSample);
+//                    }
 
                     return new CommonResponse(true, "Appointment updated successfully").toString();
                 }else {
@@ -218,6 +259,19 @@ public class AppoinmentsServiceImp implements AppointmentsService {
             for(Appointments appointments : appointmentsList) {
                 AppointmentsDTO appointmentsDTO = modelMapper.map(appointments, AppointmentsDTO.class);
 
+                Optional<Client_Sample> clientSampleList = clientSampleRepo.findByAppointments_Id(appointments.getId());
+                if(clientSampleList.isPresent()) {
+                    ClientSampleDTO clientSampleDTO = new ClientSampleDTO();
+                    clientSampleDTO.setId(clientSampleList.get().getId());
+                    clientSampleDTO.setFile_name(clientSampleList.get().getFile_name());
+                    clientSampleDTO.setFile_type(clientSampleList.get().getFile_type());
+                    clientSampleDTO.setFileData(FileCompress.decompressBytes(clientSampleList.get().getFileData()));
+                    clientSampleDTO.setRelative_path(clientSampleList.get().getRelative_path());
+                    clientSampleDTO.setCreate_date(clientSampleList.get().getCreate_date());
+                    clientSampleDTO.setUpdate_date(clientSampleList.get().getUpdate_date());
+                    appointmentsDTO.setClient_sample(clientSampleDTO);
+                }
+
                 List<OrderDetails> orderDetailsList = orderDetailsRepo.getAllByAppointments_Id(appointments.getId());
                 if(!orderDetailsList.isEmpty()) {
                     List<OrderDetailsDTO> orderDetailsDTOList = new ArrayList<>();
@@ -254,13 +308,41 @@ public class AppoinmentsServiceImp implements AppointmentsService {
     @Override
     public String cancelAppoinment(AppointmentsDTO appointmentsDTO) {
         System.out.println("cancelAppoinment method is called-- "+appointmentsDTO.getId());
+        System.out.println("cancelAppoinment method is called-- "+appointmentsDTO.getStatus());
 
         try{
             List<Appointments> appointmentsFind = appoinmentsRepo.findById(appointmentsDTO.getId());
             if(!appointmentsFind.isEmpty()){
                 for(Appointments appointments : appointmentsFind) {
-                    appointments.setStatus(AppoinmentStatus.CANCELLED);
-                    appoinmentsRepo.save(appointments);
+                    SimpleMailMessage msg = new SimpleMailMessage();
+                    if(appointmentsDTO.getStatus().toString().equals("ACCEPTED")){
+                        appointments.setStatus(AppoinmentStatus.ACCEPTED);
+                        appoinmentsRepo.save(appointments);
+
+                        msg.setFrom("stichcentral@gmail.com");
+                        msg.setTo(appointments.getCustomer().getEmail());
+                        msg.setSubject("Appointment Accepted!");
+                        msg.setText("Hello "+appointments.getCustomer().getFirst_name()+"" +
+                                ",\n\nYour appointment has been accepted. We will contact you on "+appointments.getAppointment_date()+
+                                "\n\nThank you,\nStitchCentral");
+                        javaMailSender.send(msg);
+                        System.out.println("Email sent successfully");
+
+                    }else {
+                        appointments.setStatus(AppoinmentStatus.CANCELLED);
+                        appointments.setCancellationReason(appointmentsDTO.getCancellationReason());
+                        appoinmentsRepo.save(appointments);
+
+                        msg.setFrom("stichcentral@gmail.com");
+                        msg.setTo(appointments.getCustomer().getEmail());
+                        msg.setSubject("Appointment Cancelled!");
+                        msg.setText("Hello "+appointments.getCustomer().getFirst_name()+"" +
+                                ",\n\nYour appointment has been cancelled. Because of "+appointments.getCancellationReason()+"" +
+                                "\n\nThank you,\nStitchCentral");
+                        javaMailSender.send(msg);
+                        System.out.println("Email sent successfully");
+                    }
+
                 }
                 return new CommonResponse(true, "Appointment cancelled successfully").toString();
             }else {
@@ -273,5 +355,99 @@ public class AppoinmentsServiceImp implements AppointmentsService {
         }
 
 
+    }
+
+    @Override
+    public String uploadFile(MultipartFile file, String email) {
+        System.out.println("uploadFile method is called-- "+email);
+        System.out.println("uploadFile method is called-- "+file.getOriginalFilename());
+        try {
+            Optional<Customer> customerFind = customerRepo.findByEmail(email);
+            Optional<Appointments> appointmentsFind = appoinmentsRepo. findByCustomer_IdAndStatus(customerFind.get().getId(), AppoinmentStatus.PENDING);
+            if (appointmentsFind.isPresent()) {
+
+                    Client_Sample clientSample = new Client_Sample();
+                    clientSample.setFile_name(file.getOriginalFilename());
+                    clientSample.setFile_type(file.getContentType());
+                    if(file.getBytes().length > 10000000){
+                        return new CommonResponse(false, "File size is too large").toString();
+                    }
+                    clientSample.setFileData(FileCompress.compressBytes(file.getBytes()));
+                    clientSample.setRelative_path(file.getOriginalFilename());
+                    clientSample.setCreate_date(new java.sql.Date(System.currentTimeMillis()));
+                    clientSample.setUpdate_date(new java.sql.Date(System.currentTimeMillis()));
+                    clientSample.setAppointments(appointmentsFind.get());
+                    clientSampleRepo.save(clientSample);
+
+                    return new CommonResponse(true, "File uploaded successfully").toString();
+            }
+            return new CommonResponse(false, "Appointment not found").toString();
+        }catch (Exception e){
+            e.printStackTrace();
+            return new CommonResponse(false, e.getMessage()).toString();
+        }
+
+
+
+
+//        int id = Integer.parseInt(appointmentId);
+//        System.out.println("uploadFile method is called-- "+id);
+//        System.out.println("uploadFile method is called-- "+appointmentsDTO.toString());
+//        System.out.println("uploadFile method is called-- "+appointmentsDTO.toString());
+//        try{
+//            Optional<Customer> customerFind = customerRepo.findByEmail(appointmentsDTO.getCustomer().getEmail());
+//            if(customerFind.isPresent()) {
+//
+//                if(!file.isEmpty()){
+//                    ClientSampleDTO clientSample = new ClientSampleDTO();
+//                    clientSample.setFile_name(file.getOriginalFilename());
+//                    clientSample.setFile_type(file.getContentType());
+//                    clientSample.setFileData(FileCompress.compressBytes(file.getBytes()));
+//                    clientSample.setRelative_path(file.getOriginalFilename());
+//                    clientSample.setCreate_date(appointmentsDTO.getClient_sample().getCreate_date());
+//                    clientSample.setUpdate_date(appointmentsDTO.getClient_sample().getUpdate_date());
+//
+//                    if(clientSample.getFileData().length > 100000){
+//                        return new CommonResponse(false, "File size is too large").toString();
+//                    }
+//
+//                    appointmentsDTO.setClient_sample(clientSample);
+//                    return saveAppointment(appointmentsDTO);
+//                }else {
+//                    return new CommonResponse(false, "File is empty").toString();
+//                }
+//
+//
+//            }else{
+//                return new CommonResponse(false, CUSTOMER_NOT_FOUND).toString();
+//            }
+//        }catch (Exception e){
+//            e.printStackTrace();
+//            return new CommonResponse(false, e.getMessage()).toString();
+//        }
+    }
+
+    @Override
+    public ClientSampleDTO downloadFile(Integer appointmentId) {
+        System.out.println("downloadFile method is called-- "+appointmentId);
+        try{
+            Optional<Client_Sample> clientSampleFind = clientSampleRepo.findByAppointments_Id(appointmentId);
+            if(clientSampleFind.isPresent()){
+                ClientSampleDTO clientSampleDTO = new ClientSampleDTO();
+                clientSampleDTO.setFile_name(clientSampleFind.get().getFile_name());
+                clientSampleDTO.setFile_type(clientSampleFind.get().getFile_type());
+                clientSampleDTO.setFileData(FileCompress.decompressBytes(clientSampleFind.get().getFileData()));
+                clientSampleDTO.setRelative_path(clientSampleFind.get().getRelative_path());
+                clientSampleDTO.setCreate_date(clientSampleFind.get().getCreate_date());
+                clientSampleDTO.setUpdate_date(clientSampleFind.get().getUpdate_date());
+                return clientSampleDTO;
+            } else {
+                return null;
+            }
+
+        }catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
     }
 }
