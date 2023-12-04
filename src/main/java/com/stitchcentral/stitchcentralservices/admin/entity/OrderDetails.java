@@ -27,6 +27,7 @@ public class OrderDetails {
     @Column(name = "swing_place")
     private String swingPlace;
 
+    private String payment;
     private double advance;
     private String description;
 
@@ -37,6 +38,20 @@ public class OrderDetails {
     @ManyToOne
     @JoinColumn(name = "appointment_id")
     private Appointments appointments;
+
+    @Temporal(TemporalType.DATE)
+    @Column(name = "create_date")
+    private Date createDate;
+
+    @Column(name = "update_date")
+    @Temporal(TemporalType.DATE)
+    private Date updateDate;
+
+    @Column(name = "invoice_no")
+    private String invoiceNo;
+
+    @Column(name = "order_status")
+    private String orderStatus;
 
 
 }

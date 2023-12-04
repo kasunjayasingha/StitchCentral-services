@@ -8,7 +8,6 @@ import com.stitchcentral.stitchcentralservices.client.service.AppointmentsServic
 import com.stitchcentral.stitchcentralservices.util.enums.AppoinmentStatus;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.HttpStatusCode;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -29,6 +28,7 @@ public class AppoinmentsController {
 
     @Autowired
     OrderDetailsService orderDetailsService;
+    String appointmentId;
 
     @RequestMapping(value = "/saveAppoinment", method = RequestMethod.POST, produces = "application/json")
     public ResponseEntity<?> saveAppoinment(@RequestBody AppointmentsDTO appointmentsDTO) {
@@ -67,12 +67,6 @@ public class AppoinmentsController {
         return new ResponseEntity<String>(appointmentsService.cancelAppoinment(appointmentsDTO), HttpStatus.OK);
     }
 
-    @RequestMapping(value = "/saveOrderDetails", method = RequestMethod.POST, produces = "application/json")
-    public ResponseEntity<?> saveOrderDetails(@RequestBody AppointmentsDTO appointmentsDTO) {
-        LOGGER.info("saveOrderDetails method is called");
-        return new ResponseEntity<String>(orderDetailsService.saveOrderDetails(appointmentsDTO), HttpStatus.OK);
-    }
-
 //    @PostMapping(value = "/uploadFile", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
 //    public ResponseEntity<?> uploadFile(@RequestPart("appointmentInfo") AppointmentsDTO appointmentsDTO,
 //                                        @RequestPart("file")  MultipartFile file) {
@@ -80,9 +74,14 @@ public class AppoinmentsController {
 //        return new ResponseEntity<String>(appointmentsService.uploadFile(appointmentsDTO,file), HttpStatus.OK);
 //    }
 
-    String appointmentId;
+    @RequestMapping(value = "/saveOrderDetails", method = RequestMethod.POST, produces = "application/json")
+    public ResponseEntity<?> saveOrderDetails(@RequestBody AppointmentsDTO appointmentsDTO) {
+        LOGGER.info("saveOrderDetails method is called");
+        return new ResponseEntity<String>(orderDetailsService.saveOrderDetails(appointmentsDTO), HttpStatus.OK);
+    }
+
     @RequestMapping(value = "/uploadFile", method = RequestMethod.POST, consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<?> uploadFile(@RequestPart("file")  MultipartFile file,
+    public ResponseEntity<?> uploadFile(@RequestPart("file") MultipartFile file,
                                         @RequestPart("appointmentId") String appointmentId
     ) {
         LOGGER.info("uploadFile method is called");
@@ -95,12 +94,23 @@ public class AppoinmentsController {
         return new ResponseEntity<ClientSampleDTO>(appointmentsService.downloadFile(appointmentId), HttpStatus.OK);
     }
 
+    @RequestMapping(value = "/getOrderDetails", method = RequestMethod.GET, produces = "application/json")
+    public List<OrderDetailsDTO> getOrderDetails() {
+        LOGGER.info("getOrderDetails method is called");
+        return orderDetailsService.getOrderDetails();
+    }
+
+    @RequestMapping(value = "/updateOrderDetails", method = RequestMethod.POST, produces = "application/json")
+    public ResponseEntity<?> updateOrderDetails(@RequestBody OrderDetailsDTO orderDetailsDTO) {
+        LOGGER.info("updateOrderDetails method is called");
+        return new ResponseEntity<String>(orderDetailsService.updateOrderDetails(orderDetailsDTO), HttpStatus.OK);
+    }
+
 //    @RequestMapping(value = "/uploadFile", method = RequestMethod.POST)
 //    public ResponseEntity<?> uploadFile(@RequestParam("appoinment") AppointmentsDTO appointmentsDTO) {
 //        LOGGER.info("uploadFile method is called");
 //        return new ResponseEntity<String>(appointmentsService.uploadFile(appointmentsDTO), HttpStatus.OK);
 //    }
-
 
 
 }

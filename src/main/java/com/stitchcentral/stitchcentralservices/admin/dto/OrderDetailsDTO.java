@@ -15,8 +15,13 @@ public class OrderDetailsDTO {
     private String material;
     private int quantity;
     private String swingPlace;
+    private String payment;
     private double advance;
     private String description;
     private Date dispatchDate;
     private int appointment_id;
+    private Date createDate;
+    private Date updateDate;
+    private String invoiceNo;
+    private String orderStatus;
 }
