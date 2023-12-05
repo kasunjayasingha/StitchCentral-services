@@ -1,5 +1,6 @@
 package com.stitchcentral.stitchcentralservices.client.service.Impl;
 
+import com.stitchcentral.stitchcentralservices.admin.dto.DashBoardDTO;
 import com.stitchcentral.stitchcentralservices.client.dto.AppointmentsDTO;
 import com.stitchcentral.stitchcentralservices.client.dto.ClientSampleDTO;
 import com.stitchcentral.stitchcentralservices.client.service.AppointmentsService;
@@ -51,6 +52,11 @@ public class testImpl implements AppointmentsService {
 
     @Override
     public ClientSampleDTO downloadFile(Integer appointmentId) {
+        return null;
+    }
+
+    @Override
+    public List<DashBoardDTO> getDashboardDetails(Integer year) {
         return null;
     }
 

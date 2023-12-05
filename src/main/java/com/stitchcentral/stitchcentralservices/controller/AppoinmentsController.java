@@ -1,5 +1,6 @@
 package com.stitchcentral.stitchcentralservices.controller;
 
+import com.stitchcentral.stitchcentralservices.admin.dto.DashBoardDTO;
 import com.stitchcentral.stitchcentralservices.admin.dto.OrderDetailsDTO;
 import com.stitchcentral.stitchcentralservices.admin.service.OrderDetailsService;
 import com.stitchcentral.stitchcentralservices.client.dto.AppointmentsDTO;
@@ -105,6 +106,19 @@ public class AppoinmentsController {
         LOGGER.info("updateOrderDetails method is called");
         return new ResponseEntity<String>(orderDetailsService.updateOrderDetails(orderDetailsDTO), HttpStatus.OK);
     }
+
+    @RequestMapping(value = "/getOrderCount", method = RequestMethod.GET, produces = "application/json")
+    public ResponseEntity<?> getOrderCount() {
+        LOGGER.info("getOrderCount method is called");
+        return new ResponseEntity<Integer>(orderDetailsService.getOrderCount(), HttpStatus.OK);
+    }
+
+    @RequestMapping(value = "/getDashboardDetails/{year}", method = RequestMethod.GET, produces = "application/json")
+    public ResponseEntity<?> getDashboardDetails(@PathVariable Integer year) {
+        LOGGER.info("getDashboardDetails method is called");
+        return new ResponseEntity<List<DashBoardDTO>>(appointmentsService.getDashboardDetails(year), HttpStatus.OK);
+    }
+
 
 //    @RequestMapping(value = "/uploadFile", method = RequestMethod.POST)
 //    public ResponseEntity<?> uploadFile(@RequestParam("appoinment") AppointmentsDTO appointmentsDTO) {

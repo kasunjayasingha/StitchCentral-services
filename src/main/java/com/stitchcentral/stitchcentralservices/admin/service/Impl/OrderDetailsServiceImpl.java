@@ -162,4 +162,18 @@ public class OrderDetailsServiceImpl implements OrderDetailsService {
             return null;
         }
     }
+
+    @Override
+    public Integer getOrderCount() {
+        LOGGER.info("getOrderCount method is called");
+
+        try {
+            List<OrderDetails> orderDetails = orderDetailsRepo.findAll();
+            return orderDetails.size();
+        } catch (Exception e) {
+            e.printStackTrace();
+            LOGGER.info("getOrderCount method is called");
+            return null;
+        }
+    }
 }

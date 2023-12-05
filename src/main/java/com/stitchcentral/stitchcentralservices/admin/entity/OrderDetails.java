@@ -28,7 +28,7 @@ public class OrderDetails {
     private String swingPlace;
 
     private String payment;
-    private double advance;
+    private Integer advance;
     private String description;
 
     @Column(name = "dispatch_date")

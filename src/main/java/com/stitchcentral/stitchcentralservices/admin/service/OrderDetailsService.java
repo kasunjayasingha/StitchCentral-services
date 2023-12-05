@@ -13,4 +13,6 @@ public interface OrderDetailsService {
 
     List<OrderDetailsDTO> getOrderDetails();
 
+    Integer getOrderCount();
+
 }
