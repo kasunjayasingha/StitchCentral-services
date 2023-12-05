@@ -437,7 +437,6 @@ public class AppoinmentsServiceImp implements AppointmentsService {
         }
     }
 
-//    @TODO
 
     @Override
     public List<DashBoardDTO> getDashboardDetails(Integer year) {
@@ -483,7 +482,6 @@ public class AppoinmentsServiceImp implements AppointmentsService {
                 Calendar calendar = Calendar.getInstance();
                 calendar.setTime(orderDetails.getUpdateDate());
                 int month = calendar.get(Calendar.MONTH) + 1; // Adding 1 because Calendar.MONTH is zero-based
-                System.out.println("month " + month);
                 int revenue = orderDetails.getAdvance();
 
                 monthlyRevenueMap.merge(month, revenue, Integer::sum);
@@ -503,7 +501,6 @@ public class AppoinmentsServiceImp implements AppointmentsService {
 
             // Set monthly details in DashBoardDTO
             dashBoardDTO.setDashBoardDTOList(new ArrayList<>());
-
             for (Map.Entry<Integer, Integer> entry : monthlyRevenueMap.entrySet()) {
 
                 DashBoardDTO monthlyDashBoardDTO = new DashBoardDTO();
@@ -513,7 +510,6 @@ public class AppoinmentsServiceImp implements AppointmentsService {
                 monthlyDashBoardDTO.setMontlyOrders(monthlyOrdersMap.get(entry.getKey()));
                 dashBoardDTO.getDashBoardDTOList().add(monthlyDashBoardDTO);
             }
-
 
             dashBoardDTOList.add(dashBoardDTO);
             return dashBoardDTOList;
