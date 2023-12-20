@@ -2,14 +2,13 @@ package com.stitchcentral.stitchcentralservices.controller;
 
 import com.stitchcentral.stitchcentralservices.auth.dto.LoginReqestDTO;
 import com.stitchcentral.stitchcentralservices.auth.service.AuthService;
-import com.stitchcentral.stitchcentralservices.client.dto.AppointmentsDTO;
 import com.stitchcentral.stitchcentralservices.client.dto.CustomerDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
 import java.util.logging.Logger;
 
 @RestController
@@ -17,10 +16,9 @@ import java.util.logging.Logger;
 @CrossOrigin("*")
 public class AuthController {
 
+    private final static Logger LOGGER = Logger.getLogger(clientController.class.getName());
     @Autowired
     private AuthService authService;
-
-    private  final static Logger LOGGER = Logger.getLogger(clientController.class.getName());
 
     @RequestMapping(value = "/checkEmailIsPresent/{email}", method = RequestMethod.GET, produces = "application/json")
     public ResponseEntity<?> checkEmailIsPresent(@PathVariable String email) {
@@ -38,6 +36,20 @@ public class AuthController {
     public ResponseEntity<?> checkOnlyEmailIPresent(@PathVariable String email) {
         LOGGER.info("checkEmailIsPresent method is called");
         return new ResponseEntity<String>(authService.checkOnlyEmailIPresent(email), HttpStatus.OK);
+    }
+
+    @RequestMapping(value = "/checkUsernameIsPresent/{username}", method = RequestMethod.GET, produces = "application/json")
+    public ResponseEntity<?> checkUsernameIsPresent(@PathVariable String username) {
+        LOGGER.info("checkUsernameIsPresent method is called");
+        return new ResponseEntity<String>(authService.checkUsernameIsPresent(username), HttpStatus.OK);
+    }
+
+    @RequestMapping(value = "/adminLogin", method = RequestMethod.POST, consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<?> uploadFile(@RequestPart("username") String username,
+                                        @RequestPart("password") String password) {
+
+        LOGGER.info("uploadFile method is called");
+        return new ResponseEntity<String>(authService.adminLogin(username, password), HttpStatus.OK);
     }
 
 
