@@ -268,8 +268,27 @@ public class AppoinmentsServiceImp implements AppointmentsService {
                 List<OrderDetails> orderDetailsList = orderDetailsRepo.getAllByAppointments_Id(appointments.getId());
                 if (!orderDetailsList.isEmpty()) {
                     List<OrderDetailsDTO> orderDetailsDTOList = new ArrayList<>();
-                    for (OrderDetails orderDetails : orderDetailsList) {
-                        OrderDetailsDTO orderDetailsDTO = modelMapper.map(orderDetails, OrderDetailsDTO.class);
+                    for (OrderDetails orderDetail : orderDetailsList) {
+                        OrderDetailsDTO orderDetailsDTO = new OrderDetailsDTO();
+                        orderDetailsDTO.setId(orderDetail.getId());
+                        orderDetailsDTO.setOrderType(orderDetail.getOrderType());
+                        orderDetailsDTO.setQuantity(orderDetail.getQuantity());
+                        orderDetailsDTO.setMaterial(orderDetail.getMaterial());
+                        orderDetailsDTO.setDescription(orderDetail.getDescription());
+                        orderDetailsDTO.setDispatchDate(orderDetail.getDispatchDate());
+                        orderDetailsDTO.setSwingPlace(orderDetail.getSwingPlace());
+                        orderDetailsDTO.setPayment(orderDetail.getPayment());
+                        orderDetailsDTO.setAdvance(orderDetail.getAdvance());
+                        orderDetailsDTO.setCreateDate(orderDetail.getCreateDate());
+                        orderDetailsDTO.setUpdateDate(orderDetail.getUpdateDate());
+                        orderDetailsDTO.setOrderStatus(orderDetail.getOrderStatus());
+                        orderDetailsDTO.setInvoiceNo(orderDetail.getInvoiceNo());
+                        ClientSampleDTO clientSampleDTO = new ClientSampleDTO();
+                        if (orderDetail.getClientSample() != null) {
+                            clientSampleDTO.setId(orderDetail.getClientSample().getId());
+                            clientSampleDTO.setFile_name(orderDetail.getClientSample().getFile_name());
+                            orderDetailsDTO.setClientSample(clientSampleDTO);
+                        }
                         orderDetailsDTOList.add(orderDetailsDTO);
 
                     }
@@ -315,11 +334,33 @@ public class AppoinmentsServiceImp implements AppointmentsService {
                         msg.setFrom("stichcentral@gmail.com");
                         msg.setTo(appointments.getCustomer().getEmail());
                         msg.setSubject("Appointment Accepted!");
-                        msg.setText("Hello " + appointments.getCustomer().getFirst_name() + "" +
-                                ",\n\nYour appointment has been accepted. We will contact you on " + appointments.getAppointment_date() +
-                                "\n\nThank you,\nStitchCentral");
-                        javaMailSender.send(msg);
-                        System.out.println("Email sent successfully");
+
+                        if (appointmentsDTO.getType().toString().equals("IN_PERSON")) {
+                            msg.setText("Hello " + appointments.getCustomer().getFirst_name() + "" +
+                                    ",\n\nYour appointment has been accepted. We will contact you on " + appointments.getAppointment_date() +
+                                    "\n\nThank you,\nStitchCentral.");
+                            javaMailSender.send(msg);
+                            System.out.println("Email sent successfully");
+                        } else {
+
+                            List<String> values = Arrays.asList(appointmentsDTO.getDescription().replace("'", "").replace("[", "").replace("]", "").split(","));
+                            String meetingDate = values.get(0);
+                            String meetingTime = values.get(1);
+                            String meetingLink = values.get(2);
+                            String meetingID = values.get(3);
+
+                            msg.setText("Hello " + appointments.getCustomer().getFirst_name() + "" +
+                                    ",\n\nYour appointment has been accepted. Your meeting details are as follows.\n" +
+                                    "\nMeeting Date: " + meetingDate + "\n" +
+                                    "Meeting Time: " + meetingTime + "\n" +
+                                    "\nMeeting Link: " + meetingLink + "\n" +
+                                    "\n" + meetingID + "\n" +
+                                    "\n\nThank you,\nStitchCentral.");
+                            javaMailSender.send(msg);
+                            System.out.println("Email sent successfully");
+
+                        }
+
 
                     } else {
                         appointments.setStatus(AppoinmentStatus.CANCELLED);

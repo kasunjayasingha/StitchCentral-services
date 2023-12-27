@@ -8,17 +8,20 @@ import com.stitchcentral.stitchcentralservices.client.dto.AppointmentsDTO;
 import com.stitchcentral.stitchcentralservices.client.dto.ClientSampleDTO;
 import com.stitchcentral.stitchcentralservices.client.entity.Appointments;
 import com.stitchcentral.stitchcentralservices.client.entity.Client_Sample;
+import com.stitchcentral.stitchcentralservices.client.entity.Customer;
 import com.stitchcentral.stitchcentralservices.client.repository.AppoinmentsRepo;
 import com.stitchcentral.stitchcentralservices.client.repository.Client_SampleRepo;
 import com.stitchcentral.stitchcentralservices.controller.clientController;
 import com.stitchcentral.stitchcentralservices.util.CommonResponse;
 import com.stitchcentral.stitchcentralservices.util.FileCompress;
 import com.stitchcentral.stitchcentralservices.util.enums.AppoinmentStatus;
+import jakarta.mail.internet.MimeMessage;
 import jakarta.transaction.Transactional;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -258,7 +261,9 @@ public class OrderDetailsServiceImpl implements OrderDetailsService {
                                 .update_date(new java.sql.Date(System.currentTimeMillis()))
                                 .build());
 
-                        if (clientSample == null) {
+                        boolean isMailSend = mailSendWithAttachment(orderDetails.get().getInvoiceNo(), orderDetails.get().getAppointments().getCustomer(), file, "NEW");
+
+                        if (clientSample == null || !isMailSend) {
                             return new CommonResponse(false, "Error in uploading file").toString();
                         } else {
                             orderDetails.get().setClientSample(clientSample);
@@ -267,6 +272,7 @@ public class OrderDetailsServiceImpl implements OrderDetailsService {
                         }
 
                     } else {
+
                         Client_Sample clientSample = orderDetails.get().getClientSample();
                         clientSample.setFile_name(file.getOriginalFilename());
                         clientSample.setFile_type(file.getContentType());
@@ -274,7 +280,13 @@ public class OrderDetailsServiceImpl implements OrderDetailsService {
                         clientSample.setRelative_path(file.getOriginalFilename());
                         clientSample.setUpdate_date(new java.sql.Date(System.currentTimeMillis()));
                         clientSampleRepo.save(clientSample);
-                        return new CommonResponse(true, "Design is uploaded").toString();
+
+                        boolean isMailSend = mailSendWithAttachment(orderDetails.get().getInvoiceNo(), orderDetails.get().getAppointments().getCustomer(), file, "UPDATE");
+                        if (!isMailSend) {
+                            return new CommonResponse(false, "Error in uploading file").toString();
+                        } else {
+                            return new CommonResponse(true, "Design is uploaded").toString();
+                        }
                     }
                 } else {
                     return new CommonResponse(false, "Order is not present").toString();
@@ -290,5 +302,46 @@ public class OrderDetailsServiceImpl implements OrderDetailsService {
         }
 
 
+    }
+
+    private boolean mailSendWithAttachment(String invoiceNo, Customer customer, MultipartFile file, String type) {
+        LOGGER.info("mailSendWithAttachment method is called");
+
+        try {
+            MimeMessage msg = javaMailSender.createMimeMessage();
+            MimeMessageHelper helper = new MimeMessageHelper(msg, true);
+            helper.setTo(customer.getEmail());
+            helper.setFrom("stichcentral@gmail.com");
+            if (type.equals("NEW")) {
+                helper.setSubject("Your Design is ready");
+                helper.setText("Hi " + customer.getFirst_name() + "," +
+                        "\n\nYour design is ready. We have attached your design with this mail." +
+                        " If you are ok with the design or if you want to change anything please contact us." +
+                        "\n\n This is your invoice number: " + invoiceNo +
+                        "\n\nThank you,\nStitch Central.");
+
+                helper.addAttachment(file.getOriginalFilename(), file);
+                javaMailSender.send(msg);
+                System.out.println("Email send to: " + customer.getEmail());
+                return true;
+            } else {
+                helper.setSubject("Your Updated Design is ready");
+                helper.setText("Hi " + customer.getFirst_name() + "," +
+                        "\n\nYour updated design is ready. We have attached your design with this mail." +
+                        " If you are ok with the design or if you want to change anything please contact us." +
+                        "\n\n This is your invoice number: " + invoiceNo +
+                        "\n\nThank you,\nStitch Central.");
+
+                helper.addAttachment(file.getOriginalFilename(), file);
+                javaMailSender.send(msg);
+                System.out.println("Email send to: " + customer.getEmail());
+                return true;
+            }
+
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
     }
 }
