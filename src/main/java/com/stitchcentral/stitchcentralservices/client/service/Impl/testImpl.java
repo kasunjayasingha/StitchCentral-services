@@ -1,8 +1,8 @@
 package com.stitchcentral.stitchcentralservices.client.service.Impl;
 
 import com.stitchcentral.stitchcentralservices.admin.dto.DashBoardDTO;
+import com.stitchcentral.stitchcentralservices.admin.dto.OrderDetailsDTO;
 import com.stitchcentral.stitchcentralservices.client.dto.AppointmentsDTO;
-import com.stitchcentral.stitchcentralservices.client.dto.ClientSampleDTO;
 import com.stitchcentral.stitchcentralservices.client.service.AppointmentsService;
 import com.stitchcentral.stitchcentralservices.util.enums.AppoinmentStatus;
 import jakarta.transaction.Transactional;
@@ -51,12 +51,17 @@ public class testImpl implements AppointmentsService {
     }
 
     @Override
-    public ClientSampleDTO downloadFile(Integer appointmentId) {
+    public byte[] downloadFile(Integer appointmentId) {
         return null;
     }
 
     @Override
     public List<DashBoardDTO> getDashboardDetails(Integer year) {
+        return null;
+    }
+
+    @Override
+    public List<OrderDetailsDTO> getAllPendingOrders() {
         return null;
     }
 

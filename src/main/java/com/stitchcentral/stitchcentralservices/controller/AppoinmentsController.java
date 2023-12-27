@@ -4,8 +4,10 @@ import com.stitchcentral.stitchcentralservices.admin.dto.DashBoardDTO;
 import com.stitchcentral.stitchcentralservices.admin.dto.OrderDetailsDTO;
 import com.stitchcentral.stitchcentralservices.admin.service.OrderDetailsService;
 import com.stitchcentral.stitchcentralservices.client.dto.AppointmentsDTO;
-import com.stitchcentral.stitchcentralservices.client.dto.ClientSampleDTO;
+import com.stitchcentral.stitchcentralservices.client.entity.Client_Sample;
+import com.stitchcentral.stitchcentralservices.client.repository.Client_SampleRepo;
 import com.stitchcentral.stitchcentralservices.client.service.AppointmentsService;
+import com.stitchcentral.stitchcentralservices.fileService.service.FileUploadService;
 import com.stitchcentral.stitchcentralservices.util.enums.AppoinmentStatus;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -30,6 +32,12 @@ public class AppoinmentsController {
     @Autowired
     OrderDetailsService orderDetailsService;
     String appointmentId;
+
+    @Autowired
+    Client_SampleRepo client_sampleRepo;
+
+    @Autowired
+    FileUploadService fileUploadService;
 
     @RequestMapping(value = "/saveAppoinment", method = RequestMethod.POST, produces = "application/json")
     public ResponseEntity<?> saveAppoinment(@RequestBody AppointmentsDTO appointmentsDTO) {
@@ -89,10 +97,19 @@ public class AppoinmentsController {
         return new ResponseEntity<String>(appointmentsService.uploadFile(file, appointmentId), HttpStatus.OK);
     }
 
-    @RequestMapping(value = "/downloadFile/{appointmentId}", method = RequestMethod.GET)
-    public ResponseEntity<?> downloadFile(@PathVariable Integer appointmentId) {
+    @RequestMapping(value = "/downloadFile/{sampleId}", method = RequestMethod.GET)
+    public ResponseEntity<?> downloadFile(@PathVariable Integer sampleId) {
         LOGGER.info("downloadFile method is called");
-        return new ResponseEntity<ClientSampleDTO>(appointmentsService.downloadFile(appointmentId), HttpStatus.OK);
+
+        Client_Sample client_sample = client_sampleRepo.findById(sampleId).get();
+        if (client_sample == null) {
+            LOGGER.info("Requested resource is not found!");
+            return ResponseEntity.notFound().build();
+        }
+
+        byte[] file = appointmentsService.downloadFile(sampleId);
+        return ResponseEntity.status(HttpStatus.OK)
+                .contentType(MediaType.parseMediaType(client_sample.getFile_type())).body(file);
     }
 
     @RequestMapping(value = "/getOrderDetails", method = RequestMethod.GET, produces = "application/json")
@@ -117,6 +134,12 @@ public class AppoinmentsController {
     public ResponseEntity<?> getDashboardDetails(@PathVariable Integer year) {
         LOGGER.info("getDashboardDetails method is called");
         return new ResponseEntity<List<DashBoardDTO>>(appointmentsService.getDashboardDetails(year), HttpStatus.OK);
+    }
+
+    @RequestMapping(value = "/getAllPendingOrders", method = RequestMethod.GET, produces = "application/json")
+    public ResponseEntity<?> getAllAppoinmentsWithOrder() {
+        LOGGER.info("getAllAppoinmentsWithOrder method is called");
+        return new ResponseEntity<List<OrderDetailsDTO>>(appointmentsService.getAllPendingOrders(), HttpStatus.OK);
     }
 
 

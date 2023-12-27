@@ -1,6 +1,7 @@
 package com.stitchcentral.stitchcentralservices.admin.entity;
 
 import com.stitchcentral.stitchcentralservices.client.entity.Appointments;
+import com.stitchcentral.stitchcentralservices.client.entity.Client_Sample;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -52,6 +53,10 @@ public class OrderDetails {
 
     @Column(name = "order_status")
     private String orderStatus;
+
+    @OneToOne
+    @JoinColumn(name = "client_sample_id")
+    private Client_Sample clientSample;
 
 
 }

@@ -4,8 +4,10 @@ import com.stitchcentral.stitchcentralservices.admin.dto.UserDTO;
 import com.stitchcentral.stitchcentralservices.admin.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 import java.util.logging.Logger;
@@ -41,5 +43,13 @@ public class AdminController {
     public ResponseEntity<?> getUserDetails(@PathVariable String username) {
         Logger.getLogger("getUserDetails method is called");
         return new ResponseEntity<UserDTO>(userService.getUserDetails(username), HttpStatus.OK);
+    }
+
+    @RequestMapping(value = "/uploadDesign", method = RequestMethod.POST, consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<?> uploadFile(@RequestPart("file") MultipartFile file,
+                                        @RequestPart("orderId") String orderId
+    ) {
+        LOGGER.info("uploadFile method is called");
+        return new ResponseEntity<String>(userService.uploadDesign(file, orderId), HttpStatus.OK);
     }
 }

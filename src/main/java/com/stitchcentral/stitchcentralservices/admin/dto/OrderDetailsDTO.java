@@ -1,5 +1,6 @@
 package com.stitchcentral.stitchcentralservices.admin.dto;
 
+import com.stitchcentral.stitchcentralservices.client.dto.ClientSampleDTO;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -24,4 +25,5 @@ public class OrderDetailsDTO {
     private Date updateDate;
     private String invoiceNo;
     private String orderStatus;
+    private ClientSampleDTO clientSample;
 }

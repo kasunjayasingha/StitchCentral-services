@@ -1,8 +1,8 @@
 package com.stitchcentral.stitchcentralservices.client.service;
 
 import com.stitchcentral.stitchcentralservices.admin.dto.DashBoardDTO;
+import com.stitchcentral.stitchcentralservices.admin.dto.OrderDetailsDTO;
 import com.stitchcentral.stitchcentralservices.client.dto.AppointmentsDTO;
-import com.stitchcentral.stitchcentralservices.client.dto.ClientSampleDTO;
 import com.stitchcentral.stitchcentralservices.util.enums.AppoinmentStatus;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -26,9 +26,11 @@ public interface AppointmentsService {
 
     String uploadFile(MultipartFile file, String appointmentId);
 
-    ClientSampleDTO downloadFile(Integer appointmentId);
+    byte[] downloadFile(Integer sampleId);
 
     List<DashBoardDTO> getDashboardDetails(Integer year);
+
+    List<OrderDetailsDTO> getAllPendingOrders();
 
 
 }

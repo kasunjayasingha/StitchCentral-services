@@ -9,6 +9,7 @@ import com.stitchcentral.stitchcentralservices.client.entity.Appointments;
 import com.stitchcentral.stitchcentralservices.client.repository.AppoinmentsRepo;
 import com.stitchcentral.stitchcentralservices.controller.clientController;
 import com.stitchcentral.stitchcentralservices.util.CommonResponse;
+import com.stitchcentral.stitchcentralservices.util.enums.AppoinmentStatus;
 import jakarta.transaction.Transactional;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -49,7 +50,9 @@ public class OrderDetailsServiceImpl implements OrderDetailsService {
             } else {
                 List<Appointments> appointments = appoinmentsRepo.findById(appointmentsDTO.getId());
                 if (!appointments.isEmpty()) {
-                    for (OrderDetailsDTO orderDetailsDTO : appointmentsDTO.getOrderDetails()) {
+                    if (appointments.get(0).getStatus().equals(AppoinmentStatus.valueOf("ACCEPTED"))) {
+                        LOGGER.info("saveOrderDetails ACCEPTED method is called");
+                        OrderDetailsDTO orderDetailsDTO = appointmentsDTO.getOrderDetails().get(0);
                         OrderDetails od = new OrderDetails();
                         od.setAppointments(appointments.get(0));
                         od.setOrderType(orderDetailsDTO.getOrderType());
@@ -62,6 +65,9 @@ public class OrderDetailsServiceImpl implements OrderDetailsService {
                         od.setAdvance(orderDetailsDTO.getAdvance());
                         od.setCreateDate(new java.sql.Date(System.currentTimeMillis()));
                         od.setUpdateDate(new java.sql.Date(System.currentTimeMillis()));
+                        if (appointments.get(0).getClient_sample() != null) {
+                            od.setClientSample(appointments.get(0).getClient_sample());
+                        }
                         od.setOrderStatus("PENDING");
 
                         od = orderDetailsRepo.save(od);
@@ -69,10 +75,34 @@ public class OrderDetailsServiceImpl implements OrderDetailsService {
                         System.out.println("Year: " + (od.getCreateDate().getYear() + 1900));
                         od.setInvoiceNo("INV-" + (od.getCreateDate().getYear() + 1900) + "-" + (od.getCreateDate().getMonth() + 1) + "-" + od.getId());
                         orderDetailsRepo.save(od);
-                    }
-                    appointments.get(0).setStatus(appointmentsDTO.getStatus());
-                    appoinmentsRepo.save(appointments.get(0));
 
+                        appointments.get(0).setStatus(AppoinmentStatus.COMPLETED);
+                        appoinmentsRepo.save(appointments.get(0));
+                    } else {
+                        for (OrderDetailsDTO orderDetailsDTO : appointmentsDTO.getOrderDetails()) {
+                            OrderDetails od = new OrderDetails();
+                            od.setAppointments(appointments.get(0));
+                            od.setOrderType(orderDetailsDTO.getOrderType());
+                            od.setQuantity(orderDetailsDTO.getQuantity());
+                            od.setMaterial(orderDetailsDTO.getMaterial());
+                            od.setDescription(orderDetailsDTO.getDescription());
+                            od.setDispatchDate(orderDetailsDTO.getDispatchDate());
+                            od.setSwingPlace(orderDetailsDTO.getSwingPlace());
+                            od.setPayment(orderDetailsDTO.getPayment());
+                            od.setAdvance(orderDetailsDTO.getAdvance());
+                            od.setCreateDate(new java.sql.Date(System.currentTimeMillis()));
+                            od.setUpdateDate(new java.sql.Date(System.currentTimeMillis()));
+                            od.setOrderStatus("PENDING");
+
+                            od = orderDetailsRepo.save(od);
+                            System.out.println("Year: " + od.getCreateDate());
+                            System.out.println("Year: " + (od.getCreateDate().getYear() + 1900));
+                            od.setInvoiceNo("INV-" + (od.getCreateDate().getYear() + 1900) + "-" + (od.getCreateDate().getMonth() + 1) + "-" + od.getId());
+                            orderDetailsRepo.save(od);
+                        }
+                        appointments.get(0).setStatus(appointmentsDTO.getStatus());
+                        appoinmentsRepo.save(appointments.get(0));
+                    }
                     return new CommonResponse(true, "Order Details saved successfully").toString();
                 } else {
                     return new CommonResponse(false, "Appointment not found").toString();

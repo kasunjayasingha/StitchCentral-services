@@ -13,6 +13,7 @@ import com.stitchcentral.stitchcentralservices.client.repository.AppoinmentsRepo
 import com.stitchcentral.stitchcentralservices.client.repository.Client_SampleRepo;
 import com.stitchcentral.stitchcentralservices.client.repository.CustomerRepo;
 import com.stitchcentral.stitchcentralservices.client.service.AppointmentsService;
+import com.stitchcentral.stitchcentralservices.fileService.service.FileUploadService;
 import com.stitchcentral.stitchcentralservices.util.CommonResponse;
 import com.stitchcentral.stitchcentralservices.util.FileCompress;
 import com.stitchcentral.stitchcentralservices.util.enums.AppoinmentStatus;
@@ -31,6 +32,7 @@ import java.util.*;
 public class AppoinmentsServiceImp implements AppointmentsService {
 
     private static final String CUSTOMER_NOT_FOUND = "Customer not found";
+    private final String FOLDER_PATH = "D:/CINEC EDU/Group_Project/File_Data/";
     @Autowired
     AppoinmentsRepo appoinmentsRepo;
     @Autowired
@@ -43,6 +45,9 @@ public class AppoinmentsServiceImp implements AppointmentsService {
     ModelMapper modelMapper;
     @Autowired
     private JavaMailSender javaMailSender;
+
+    @Autowired
+    private FileUploadService fileUploadService;
 
     @Override
     public String saveAppointment(AppointmentsDTO appointmentsDTO) {
@@ -253,7 +258,7 @@ public class AppoinmentsServiceImp implements AppointmentsService {
                     clientSampleDTO.setId(clientSampleList.get().getId());
                     clientSampleDTO.setFile_name(clientSampleList.get().getFile_name());
                     clientSampleDTO.setFile_type(clientSampleList.get().getFile_type());
-                    clientSampleDTO.setFileData(FileCompress.decompressBytes(clientSampleList.get().getFileData()));
+//                    clientSampleDTO.setFileData(FileCompress.decompressBytes(clientSampleList.get().getFileData()));
                     clientSampleDTO.setRelative_path(clientSampleList.get().getRelative_path());
                     clientSampleDTO.setCreate_date(clientSampleList.get().getCreate_date());
                     clientSampleDTO.setUpdate_date(clientSampleList.get().getUpdate_date());
@@ -354,20 +359,41 @@ public class AppoinmentsServiceImp implements AppointmentsService {
             Optional<Appointments> appointmentsFind = appoinmentsRepo.findByCustomer_IdAndStatus(customerFind.get().getId(), AppoinmentStatus.PENDING);
             if (appointmentsFind.isPresent()) {
 
-                Client_Sample clientSample = new Client_Sample();
-                clientSample.setFile_name(file.getOriginalFilename());
-                clientSample.setFile_type(file.getContentType());
+//                Client_Sample clientSample = new Client_Sample();
+//                clientSample.setFile_name(file.getOriginalFilename());
+//                clientSample.setFile_type(file.getContentType());
                 if (file.getBytes().length > 10000000) {
                     return new CommonResponse(false, "File size is too large").toString();
                 }
-                clientSample.setFileData(FileCompress.compressBytes(file.getBytes()));
-                clientSample.setRelative_path(file.getOriginalFilename());
-                clientSample.setCreate_date(new java.sql.Date(System.currentTimeMillis()));
-                clientSample.setUpdate_date(new java.sql.Date(System.currentTimeMillis()));
-                clientSample.setAppointments(appointmentsFind.get());
-                clientSampleRepo.save(clientSample);
+//                clientSample.setFileData(FileCompress.compressBytes(file.getBytes()));
+//                clientSample.setRelative_path(file.getOriginalFilename());
+//                clientSample.setCreate_date(new java.sql.Date(System.currentTimeMillis()));
+//                clientSample.setUpdate_date(new java.sql.Date(System.currentTimeMillis()));
+//                clientSample.setAppointments(appointmentsFind.get());
+//                clientSampleRepo.save(clientSample);
 
-                return new CommonResponse(true, "File uploaded successfully").toString();
+                String filePath = FOLDER_PATH + file.getOriginalFilename();
+                Client_Sample clientSample = clientSampleRepo.save(Client_Sample.builder()
+                        .file_name(file.getOriginalFilename())
+                        .file_type(file.getContentType())
+                        .fileData(FileCompress.compressBytes(file.getBytes()))
+                        .relative_path(file.getOriginalFilename())
+                        .create_date(new java.sql.Date(System.currentTimeMillis()))
+                        .update_date(new java.sql.Date(System.currentTimeMillis()))
+                        .appointments(appointmentsFind.get())
+                        .build());
+//
+//                file.transferTo(new java.io.File(filePath));
+
+//                boolean isFileSaved = fileUploadService.uploadFile(file, appointmentsFind.get());
+
+                if (clientSample != null) {
+                    return new CommonResponse(true, "File uploaded successfully").toString();
+                } else {
+                    return new CommonResponse(false, "File upload failed").toString();
+                }
+
+//                return new CommonResponse(true, "File uploaded successfully").toString();
             }
             return new CommonResponse(false, "Appointment not found").toString();
         } catch (Exception e) {
@@ -375,58 +401,17 @@ public class AppoinmentsServiceImp implements AppointmentsService {
             return new CommonResponse(false, e.getMessage()).toString();
         }
 
-
-//        int id = Integer.parseInt(appointmentId);
-//        System.out.println("uploadFile method is called-- "+id);
-//        System.out.println("uploadFile method is called-- "+appointmentsDTO.toString());
-//        System.out.println("uploadFile method is called-- "+appointmentsDTO.toString());
-//        try{
-//            Optional<Customer> customerFind = customerRepo.findByEmail(appointmentsDTO.getCustomer().getEmail());
-//            if(customerFind.isPresent()) {
-//
-//                if(!file.isEmpty()){
-//                    ClientSampleDTO clientSample = new ClientSampleDTO();
-//                    clientSample.setFile_name(file.getOriginalFilename());
-//                    clientSample.setFile_type(file.getContentType());
-//                    clientSample.setFileData(FileCompress.compressBytes(file.getBytes()));
-//                    clientSample.setRelative_path(file.getOriginalFilename());
-//                    clientSample.setCreate_date(appointmentsDTO.getClient_sample().getCreate_date());
-//                    clientSample.setUpdate_date(appointmentsDTO.getClient_sample().getUpdate_date());
-//
-//                    if(clientSample.getFileData().length > 100000){
-//                        return new CommonResponse(false, "File size is too large").toString();
-//                    }
-//
-//                    appointmentsDTO.setClient_sample(clientSample);
-//                    return saveAppointment(appointmentsDTO);
-//                }else {
-//                    return new CommonResponse(false, "File is empty").toString();
-//                }
-//
-//
-//            }else{
-//                return new CommonResponse(false, CUSTOMER_NOT_FOUND).toString();
-//            }
-//        }catch (Exception e){
-//            e.printStackTrace();
-//            return new CommonResponse(false, e.getMessage()).toString();
-//        }
     }
 
     @Override
-    public ClientSampleDTO downloadFile(Integer appointmentId) {
-        System.out.println("downloadFile method is called-- " + appointmentId);
+    public byte[] downloadFile(Integer sampleId) {
+        System.out.println("downloadFile method is called-- " + sampleId);
         try {
-            Optional<Client_Sample> clientSampleFind = clientSampleRepo.findByAppointments_Id(appointmentId);
+            Optional<Client_Sample> clientSampleFind = clientSampleRepo.findById(sampleId);
             if (clientSampleFind.isPresent()) {
                 ClientSampleDTO clientSampleDTO = new ClientSampleDTO();
-                clientSampleDTO.setFile_name(clientSampleFind.get().getFile_name());
-                clientSampleDTO.setFile_type(clientSampleFind.get().getFile_type());
                 clientSampleDTO.setFileData(FileCompress.decompressBytes(clientSampleFind.get().getFileData()));
-                clientSampleDTO.setRelative_path(clientSampleFind.get().getRelative_path());
-                clientSampleDTO.setCreate_date(clientSampleFind.get().getCreate_date());
-                clientSampleDTO.setUpdate_date(clientSampleFind.get().getUpdate_date());
-                return clientSampleDTO;
+                return clientSampleDTO.getFileData();
             } else {
                 return null;
             }
@@ -520,6 +505,48 @@ public class AppoinmentsServiceImp implements AppointmentsService {
             return null;
         }
 
+    }
+
+    @Override
+    public List<OrderDetailsDTO> getAllPendingOrders() {
+        System.out.println("getAllAppoinmentsWithOrder method is called-- ");
+        try {
+            List<OrderDetails> orderDetailsList = orderDetailsRepo.findAllByOrderStatus("PENDING");
+
+            if (!orderDetailsList.isEmpty()) {
+                List<OrderDetailsDTO> orderDetailsDTOList = new ArrayList<>();
+                for (OrderDetails orderDetails : orderDetailsList) {
+                    OrderDetailsDTO orderDetailsDTO = modelMapper.map(orderDetails, OrderDetailsDTO.class);
+                    orderDetailsDTOList.add(orderDetailsDTO);
+                }
+                return orderDetailsDTOList;
+            } else {
+                return null;
+            }
+
+
+//            List<Integer> appointmentIdList = new ArrayList<>();
+//            for (OrderDetails orderDetails : orderDetailsList) {
+//                appointmentIdList.add(orderDetails.getAppointments().getId());
+//            }
+//            System.out.println("appointmentIdList " + appointmentIdList);
+//            List<Integer> distinctAppointmentIdList = appointmentIdList.stream().distinct().collect(java.util.stream.Collectors.toList());
+//            System.out.println("distinctAppointmentIdList " + distinctAppointmentIdList);
+//
+//            List<AppointmentsDTO> appointmentsDTOList = new ArrayList<>();
+//            for (Integer appointmentId : distinctAppointmentIdList) {
+//                Optional<Appointments> appointmentsFind = appoinmentsRepo.findById(appointmentId);
+//                if (appointmentsFind.isPresent()) {
+//                    AppointmentsDTO appointmentsDTO = modelMapper.map(appointmentsFind.get(), AppointmentsDTO.class);
+//                    appointmentsDTOList.add(appointmentsDTO);
+//                }
+//            }
+//            return appointmentsDTOList;
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
     }
 
     private String getMonthName(int monthNumber) {
