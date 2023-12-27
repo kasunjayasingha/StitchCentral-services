@@ -1,6 +1,7 @@
 package com.stitchcentral.stitchcentralservices.controller;
 
 import com.stitchcentral.stitchcentralservices.admin.dto.UserDTO;
+import com.stitchcentral.stitchcentralservices.admin.service.OrderDetailsService;
 import com.stitchcentral.stitchcentralservices.admin.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -20,6 +21,9 @@ public class AdminController {
 
     @Autowired
     private UserService userService;
+
+    @Autowired
+    private OrderDetailsService orderDetailsService;
 
     @RequestMapping(value = "/newUserSave", method = RequestMethod.POST, produces = "application/json")
     public ResponseEntity<?> saveNewUser(@RequestBody UserDTO userDTO) {
@@ -50,6 +54,6 @@ public class AdminController {
                                         @RequestPart("orderId") String orderId
     ) {
         LOGGER.info("uploadFile method is called");
-        return new ResponseEntity<String>(userService.uploadDesign(file, orderId), HttpStatus.OK);
+        return new ResponseEntity<String>(orderDetailsService.uploadDesign(file, orderId), HttpStatus.OK);
     }
 }

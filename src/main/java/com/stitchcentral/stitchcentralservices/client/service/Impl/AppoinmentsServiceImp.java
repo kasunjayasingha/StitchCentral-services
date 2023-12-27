@@ -515,8 +515,27 @@ public class AppoinmentsServiceImp implements AppointmentsService {
 
             if (!orderDetailsList.isEmpty()) {
                 List<OrderDetailsDTO> orderDetailsDTOList = new ArrayList<>();
-                for (OrderDetails orderDetails : orderDetailsList) {
-                    OrderDetailsDTO orderDetailsDTO = modelMapper.map(orderDetails, OrderDetailsDTO.class);
+                for (OrderDetails orderDetail : orderDetailsList) {
+                    OrderDetailsDTO orderDetailsDTO = new OrderDetailsDTO();
+                    orderDetailsDTO.setId(orderDetail.getId());
+                    orderDetailsDTO.setOrderType(orderDetail.getOrderType());
+                    orderDetailsDTO.setQuantity(orderDetail.getQuantity());
+                    orderDetailsDTO.setMaterial(orderDetail.getMaterial());
+                    orderDetailsDTO.setDescription(orderDetail.getDescription());
+                    orderDetailsDTO.setDispatchDate(orderDetail.getDispatchDate());
+                    orderDetailsDTO.setSwingPlace(orderDetail.getSwingPlace());
+                    orderDetailsDTO.setPayment(orderDetail.getPayment());
+                    orderDetailsDTO.setAdvance(orderDetail.getAdvance());
+                    orderDetailsDTO.setCreateDate(orderDetail.getCreateDate());
+                    orderDetailsDTO.setUpdateDate(orderDetail.getUpdateDate());
+                    orderDetailsDTO.setOrderStatus(orderDetail.getOrderStatus());
+                    orderDetailsDTO.setInvoiceNo(orderDetail.getInvoiceNo());
+                    ClientSampleDTO clientSampleDTO = new ClientSampleDTO();
+                    if (orderDetail.getClientSample() != null) {
+                        clientSampleDTO.setId(orderDetail.getClientSample().getId());
+                        clientSampleDTO.setFile_name(orderDetail.getClientSample().getFile_name());
+                        orderDetailsDTO.setClientSample(clientSampleDTO);
+                    }
                     orderDetailsDTOList.add(orderDetailsDTO);
                 }
                 return orderDetailsDTOList;

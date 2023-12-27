@@ -2,6 +2,7 @@ package com.stitchcentral.stitchcentralservices.admin.service.Impl;
 
 import com.stitchcentral.stitchcentralservices.admin.dto.UserDTO;
 import com.stitchcentral.stitchcentralservices.admin.entity.Users;
+import com.stitchcentral.stitchcentralservices.admin.repository.OrderDetailsRepo;
 import com.stitchcentral.stitchcentralservices.admin.repository.UsersRepo;
 import com.stitchcentral.stitchcentralservices.admin.service.UserService;
 import com.stitchcentral.stitchcentralservices.util.CommonResponse;
@@ -10,7 +11,6 @@ import jakarta.transaction.Transactional;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 import java.util.Optional;
@@ -26,6 +26,9 @@ public class UserServiceImpl implements UserService {
 
     @Autowired
     UsersRepo usersRepo;
+
+    @Autowired
+    OrderDetailsRepo orderDetailsRepo;
 
     @Override
     public String saveNewUser(UserDTO userDTO) {
@@ -126,8 +129,5 @@ public class UserServiceImpl implements UserService {
         }
     }
 
-    @Override
-    public String uploadDesign(MultipartFile file, String orderId) {
-        return null;
-    }
+
 }

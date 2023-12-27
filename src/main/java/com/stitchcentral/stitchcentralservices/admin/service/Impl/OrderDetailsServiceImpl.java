@@ -5,10 +5,14 @@ import com.stitchcentral.stitchcentralservices.admin.entity.OrderDetails;
 import com.stitchcentral.stitchcentralservices.admin.repository.OrderDetailsRepo;
 import com.stitchcentral.stitchcentralservices.admin.service.OrderDetailsService;
 import com.stitchcentral.stitchcentralservices.client.dto.AppointmentsDTO;
+import com.stitchcentral.stitchcentralservices.client.dto.ClientSampleDTO;
 import com.stitchcentral.stitchcentralservices.client.entity.Appointments;
+import com.stitchcentral.stitchcentralservices.client.entity.Client_Sample;
 import com.stitchcentral.stitchcentralservices.client.repository.AppoinmentsRepo;
+import com.stitchcentral.stitchcentralservices.client.repository.Client_SampleRepo;
 import com.stitchcentral.stitchcentralservices.controller.clientController;
 import com.stitchcentral.stitchcentralservices.util.CommonResponse;
+import com.stitchcentral.stitchcentralservices.util.FileCompress;
 import com.stitchcentral.stitchcentralservices.util.enums.AppoinmentStatus;
 import jakarta.transaction.Transactional;
 import org.modelmapper.ModelMapper;
@@ -16,11 +20,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 import java.util.Optional;
 import java.util.logging.Logger;
-import java.util.stream.Collectors;
 
 @Service("orderDetailsService")
 @Transactional
@@ -36,7 +40,8 @@ public class OrderDetailsServiceImpl implements OrderDetailsService {
 
     @Autowired
     OrderDetailsRepo orderDetailsRepo;
-
+    @Autowired
+    Client_SampleRepo clientSampleRepo;
     @Autowired
     private JavaMailSender javaMailSender;
 
@@ -185,7 +190,32 @@ public class OrderDetailsServiceImpl implements OrderDetailsService {
 
         try {
             List<OrderDetails> orderDetails = orderDetailsRepo.findAll();
-            return orderDetails.stream().map(orderDetail -> modelMapper.map(orderDetail, OrderDetailsDTO.class)).collect(Collectors.toList());
+            List<OrderDetailsDTO> orderDetailsDTOList = new java.util.ArrayList<>();
+            for (OrderDetails orderDetail : orderDetails) {
+                OrderDetailsDTO orderDetailsDTO = new OrderDetailsDTO();
+                orderDetailsDTO.setId(orderDetail.getId());
+                orderDetailsDTO.setOrderType(orderDetail.getOrderType());
+                orderDetailsDTO.setQuantity(orderDetail.getQuantity());
+                orderDetailsDTO.setMaterial(orderDetail.getMaterial());
+                orderDetailsDTO.setDescription(orderDetail.getDescription());
+                orderDetailsDTO.setDispatchDate(orderDetail.getDispatchDate());
+                orderDetailsDTO.setSwingPlace(orderDetail.getSwingPlace());
+                orderDetailsDTO.setPayment(orderDetail.getPayment());
+                orderDetailsDTO.setAdvance(orderDetail.getAdvance());
+                orderDetailsDTO.setCreateDate(orderDetail.getCreateDate());
+                orderDetailsDTO.setUpdateDate(orderDetail.getUpdateDate());
+                orderDetailsDTO.setOrderStatus(orderDetail.getOrderStatus());
+                orderDetailsDTO.setInvoiceNo(orderDetail.getInvoiceNo());
+                ClientSampleDTO clientSampleDTO = new ClientSampleDTO();
+                if (orderDetail.getClientSample() != null) {
+                    clientSampleDTO.setId(orderDetail.getClientSample().getId());
+                    clientSampleDTO.setFile_name(orderDetail.getClientSample().getFile_name());
+                    orderDetailsDTO.setClientSample(clientSampleDTO);
+                }
+                orderDetailsDTOList.add(orderDetailsDTO);
+            }
+            return orderDetailsDTOList;
+//            return orderDetails.stream().map(orderDetail -> modelMapper.map(orderDetail, OrderDetailsDTO.class)).collect(Collectors.toList());
         } catch (Exception e) {
             e.printStackTrace();
             LOGGER.info("getOrderDetails method is called");
@@ -205,5 +235,60 @@ public class OrderDetailsServiceImpl implements OrderDetailsService {
             LOGGER.info("getOrderCount method is called");
             return null;
         }
+    }
+
+    @Override
+    public String uploadDesign(MultipartFile file, String orderId) {
+        LOGGER.info("uploadDesign method is called");
+
+        try {
+            if (file == null || file.isEmpty()) {
+                return new CommonResponse(false, "File is empty").toString();
+            } else {
+
+                Optional<OrderDetails> orderDetails = orderDetailsRepo.findById(Integer.parseInt(orderId));
+                if (orderDetails.isPresent()) {
+                    if (orderDetails.get().getClientSample() == null) {
+                        Client_Sample clientSample = clientSampleRepo.save(Client_Sample.builder()
+                                .file_name(file.getOriginalFilename())
+                                .file_type(file.getContentType())
+                                .fileData(FileCompress.compressBytes(file.getBytes()))
+                                .relative_path(file.getOriginalFilename())
+                                .create_date(new java.sql.Date(System.currentTimeMillis()))
+                                .update_date(new java.sql.Date(System.currentTimeMillis()))
+                                .build());
+
+                        if (clientSample == null) {
+                            return new CommonResponse(false, "Error in uploading file").toString();
+                        } else {
+                            orderDetails.get().setClientSample(clientSample);
+                            orderDetailsRepo.save(orderDetails.get());
+                            return new CommonResponse(true, "Design is uploaded").toString();
+                        }
+
+                    } else {
+                        Client_Sample clientSample = orderDetails.get().getClientSample();
+                        clientSample.setFile_name(file.getOriginalFilename());
+                        clientSample.setFile_type(file.getContentType());
+                        clientSample.setFileData(FileCompress.compressBytes(file.getBytes()));
+                        clientSample.setRelative_path(file.getOriginalFilename());
+                        clientSample.setUpdate_date(new java.sql.Date(System.currentTimeMillis()));
+                        clientSampleRepo.save(clientSample);
+                        return new CommonResponse(true, "Design is uploaded").toString();
+                    }
+                } else {
+                    return new CommonResponse(false, "Order is not present").toString();
+                }
+
+
+            }
+
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            return new CommonResponse(false, e.getMessage()).toString();
+        }
+
+
     }
 }
