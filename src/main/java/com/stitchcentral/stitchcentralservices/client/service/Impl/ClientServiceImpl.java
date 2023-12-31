@@ -1,7 +1,9 @@
 package com.stitchcentral.stitchcentralservices.client.service.Impl;
 
 import com.stitchcentral.stitchcentralservices.client.dto.CustomerDTO;
+import com.stitchcentral.stitchcentralservices.client.entity.ContactUs;
 import com.stitchcentral.stitchcentralservices.client.entity.Customer;
+import com.stitchcentral.stitchcentralservices.client.repository.ContactUsRepo;
 import com.stitchcentral.stitchcentralservices.client.repository.CustomerRepo;
 import com.stitchcentral.stitchcentralservices.client.service.ClientService;
 import com.stitchcentral.stitchcentralservices.util.CommonResponse;
@@ -9,7 +11,6 @@ import com.stitchcentral.stitchcentralservices.util.enums.CustomerTypes;
 import jakarta.transaction.Transactional;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.configurationprocessor.json.JSONObject;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -26,17 +27,20 @@ public class ClientServiceImpl implements ClientService {
     @Autowired
     ModelMapper modelMapper;
 
+    @Autowired
+    ContactUsRepo contactUsRepo;
+
     @Override
     public String saveCustomer(CustomerDTO customerDTO) {
-        System.out.println("saveCustomer method is called-- "+customerDTO.toString());
+        System.out.println("saveCustomer method is called-- " + customerDTO.toString());
 
 
-        try{
-            Optional<Customer> ss=customerRepo.findByEmail(customerDTO.getEmail());
+        try {
+            Optional<Customer> ss = customerRepo.findByEmail(customerDTO.getEmail());
 //           List<Customer> list= customerRepo.findByEmailAndId(customerDTO.getEmail(),7);
             if (ss.isPresent()) {
 
-                if(customerDTO.getCustomer_type().equals(CustomerTypes.GUEST) || ss.get().getCustomer_type().equals(CustomerTypes.GUEST)){
+                if (customerDTO.getCustomer_type().equals(CustomerTypes.GUEST) || ss.get().getCustomer_type().equals(CustomerTypes.GUEST)) {
                     ss.get().setFirst_name(customerDTO.getFirst_name());
                     ss.get().setLast_name(customerDTO.getLast_name());
                     ss.get().setAddress(customerDTO.getAddress());
@@ -46,24 +50,22 @@ public class ClientServiceImpl implements ClientService {
                     ss.get().setClub(customerDTO.getClub());
                     ss.get().setCustomer_type(customerDTO.getCustomer_type());
                     ss.get().setUniversity(customerDTO.getUniversity());
-                    if(customerDTO.getCustomer_type().equals(CustomerTypes.REGULAR)) {
+                    if (customerDTO.getCustomer_type().equals(CustomerTypes.REGULAR)) {
                         ss.get().setPassword(customerDTO.getPassword());
                     }
                     ss.get().setUpdate_date(new java.sql.Date(System.currentTimeMillis()));
                     return new CommonResponse(false, "Customer already exists " + ss.get().getEmail()).toString();
                 }
                 return new CommonResponse(false, "Customer already exists " + ss.get().getEmail()).toString();
-            }else {
+            } else {
                 customerRepo.save(modelMapper.map(customerDTO, Customer.class));
 //                return new CommonResponse(true, "Customer saved successfully");
                 return new CommonResponse(true, "Customer saved successfully").toString();
             }
-        }catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
             return new CommonResponse(false, e.getMessage()).toString();
         }
-
-
 
 
     }
@@ -125,8 +127,8 @@ public class ClientServiceImpl implements ClientService {
     @Override
     public String updateCustomer(CustomerDTO customerDTO) {
         System.out.println("updateCustomer method is called -- " + customerDTO.toString());
-        try{
-            if(customerDTO.getId() > 0) {
+        try {
+            if (customerDTO.getId() > 0) {
                 Optional<Customer> customerOptional = customerRepo.findById(customerDTO.getId());
                 if (customerOptional.isPresent()) {
                     Customer customer = customerOptional.get();
@@ -157,6 +159,27 @@ public class ClientServiceImpl implements ClientService {
             return new CommonResponse(false, e.getMessage()).toString();
         }
 
+    }
+
+    @Override
+    public String saveContactUs(String name, String email, String message) {
+        System.out.println("saveContactUs method is called -- " + name + " " + email + " " + message);
+        try {
+//            JSONObject jsonObject = new JSONObject();
+//            jsonObject.put("name", name);
+//            jsonObject.put("email", email);
+//            jsonObject.put("message", message);
+            ContactUs contactUs = new ContactUs();
+            contactUs.setName(name);
+            contactUs.setEmail(email);
+            contactUs.setMessage(message);
+            contactUs.setCreate_date(new java.sql.Date(System.currentTimeMillis()));
+            contactUsRepo.save(contactUs);
+            return new CommonResponse(true, "Contact us saved successfully").toString();
+        } catch (Exception e) {
+            e.printStackTrace();
+            return new CommonResponse(false, e.getMessage()).toString();
+        }
     }
 
 
