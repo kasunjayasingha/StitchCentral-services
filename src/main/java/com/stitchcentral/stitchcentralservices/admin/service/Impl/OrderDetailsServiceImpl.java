@@ -167,6 +167,21 @@ public class OrderDetailsServiceImpl implements OrderDetailsService {
                         System.out.println("Email send to: " + od.get().getAppointments().getCustomer().getEmail());
                         orderDetailsRepo.save(od.get());
                         return new CommonResponse(true, "mail send").toString();
+                    }
+                    if (od.get().getPayment().equals("HALF") && orderDetailsDTO.getOrderStatus().equals("PAYMENT_PENDING")) {
+                        SimpleMailMessage msg = new SimpleMailMessage();
+                        msg.setTo(od.get().getAppointments().getCustomer().getEmail());
+                        msg.setFrom("stichcentral@gmail.com");
+                        msg.setSubject("Payment Pending");
+                        msg.setText("Hi " + od.get().getAppointments().getCustomer().getFirst_name() + "," +
+                                "\n\nYour order is ready. Please pay the remaining amount (Rs " + od.get().getAdvance() + ") to collect your order." +
+                                "\n\nThank you,\nStitch Central");
+                        javaMailSender.send(msg);
+
+                        System.out.println("Email send to: " + od.get().getAppointments().getCustomer().getEmail());
+                        od.get().setOrderStatus("PAYMENT_PENDING");
+                        orderDetailsRepo.save(od.get());
+                        return new CommonResponse(true, "mail send").toString();
                     } else {
                         orderDetailsRepo.save(od.get());
                         return new CommonResponse(true, "Order Details updated successfully").toString();
