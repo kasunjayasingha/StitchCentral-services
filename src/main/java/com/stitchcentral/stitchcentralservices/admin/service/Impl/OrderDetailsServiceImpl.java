@@ -178,6 +178,7 @@ public class OrderDetailsServiceImpl implements OrderDetailsService {
                                 "\n\nThank you,\nStitch Central");
                         javaMailSender.send(msg);
 
+
                         System.out.println("Email send to: " + od.get().getAppointments().getCustomer().getEmail());
                         od.get().setOrderStatus("PAYMENT_PENDING");
                         orderDetailsRepo.save(od.get());

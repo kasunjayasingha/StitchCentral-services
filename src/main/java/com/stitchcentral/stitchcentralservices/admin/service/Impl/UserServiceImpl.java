@@ -42,6 +42,10 @@ public class UserServiceImpl implements UserService {
                 if (checkUser.isPresent()) {
                     Logger.getLogger("User is present");
 
+                    if (userDTO.getNewPassword() != null && !userDTO.getNewPassword().isEmpty()) {
+                        checkUser.get().setPassword(userDTO.getNewPassword());
+                    }
+
                     checkUser.get().setRole(UserRoles.valueOf(userDTO.getRole().toString()));
                     checkUser.get().setEmail(userDTO.getEmail());
                     checkUser.get().setFirstName(userDTO.getFirstName());

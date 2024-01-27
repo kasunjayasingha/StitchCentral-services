@@ -18,6 +18,7 @@ public class UserDTO {
     private String userName;
     private String email;
     private String password;
+    private String newPassword;
     private String status;
     private Date createDate;
     private Date updateDate;
